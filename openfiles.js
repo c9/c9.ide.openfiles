@@ -7,7 +7,7 @@
 
  define(function(require, exports, module) {
     main.consumes = [
-        "plugin", "tabs", "tree", "fs", "ui"
+        "plugin", "tabs", "menus", "commands", "settings", "tree", "fs", "ui"
     ];
     main.provides = ["openfiles"];
     return main;
@@ -15,6 +15,9 @@
     function main(options, imports, register) {
         var Plugin   = imports.plugin;
         var tabs     = imports.tabs;
+        var menus    = imports.menus;
+        var commands = imports.commands;
+        var settings = imports.settings;
         var tree     = imports.tree;
         var fs       = imports.fs;
         var ui       = imports.ui;
@@ -35,15 +38,38 @@
         // UI Elements
         var ofDataProvider, ofTree, treeParent, winFileTree;
 
+        var showOpenFiles = true;
+
         var loaded = false;
         function load(){
             if (loaded) return false;
             loaded = true;
 
             // Hook events to get the focussed page
-            tabs.on("focus.sync", function(e) {console.warn("TABS > focus.sync", e); updateOpenFiles();});
-            tabs.on("page.destroy", function(e) {console.warn("TABS > page.destroy", e); updateOpenFiles();});
-            tabs.on("page.order", function(e) {console.warn("TABS > page.order", e); updateOpenFiles();});
+            tabs.on("focus.sync", updateOpenFiles);
+            tabs.on("page.destroy", updateOpenFiles);
+            tabs.on("page.order", updateOpenFiles);
+
+            commands.addCommand({
+                name: "toggleOpenfiles",
+                exec: function() {
+                    settings.set("user/openfiles/@show", !showOpenFiles);
+                    toggleOpenfiles(!showOpenFiles);
+                }
+            }, plugin);
+
+            menus.addItemByPath("View/Open Files", new apf.item({
+                type    : "check",
+                checked : "[{settings.model}::user/openfiles/@show]",
+                command : "toggleOpenfiles"
+            }), 200, plugin);
+
+            settings.on("read", function(e){
+                // Defaults
+                settings.setDefaults("user/openfiles", [["show", "true"]]);
+
+                toggleOpenfiles(settings.getBool("user/openfiles/@show"));
+            }, plugin);
 
             draw();
         }
@@ -76,7 +102,10 @@
                     setTimeout(onSelect, 40);
                 });
 
-                updateOpenFiles();
+                if (showOpenFiles)
+                    updateOpenFiles();
+                else
+                    hideOpenFiles();
 
                 emit("draw");
             });
@@ -85,6 +114,9 @@
         /***** Methods *****/
 
         function updateOpenFiles() {
+            if (!showOpenFiles)
+                return;
+
             draw();
             var activeTabs = tabs.getTabs();
             var focussedPage = tabs.focussedPage;
@@ -112,11 +144,11 @@
             });
 
             // Hide the openfiles
-            if (!root.length) {
-                treeParent.setHeight(0);
-                winFileTree.$ext.style.top = 0;
-                return;
-            }
+            if (!root.length)
+                return hideOpenFiles();
+
+            if (root.length === 1)
+                root = root[0];
 
             ofDataProvider.setRoot(root, selected);
             ofTree.resize(true);
@@ -136,6 +168,26 @@
         function onSelect() {
             var node = ofDataProvider.$selectedNode;
             tabs.focusPage(node.path);
+        }
+
+        function hideOpenFiles() {
+            if (treeParent) {
+                treeParent.setHeight(0);
+                winFileTree.$ext.style.top = 0;
+            }
+        }
+
+        function toggleOpenfiles(show) {
+            if (show === showOpenFiles)
+                return;
+            showOpenFiles = show;
+
+            if (!show)
+                hideOpenFiles();
+            else
+                updateOpenFiles();
+
+            emit("visible", {value: show});
         }
 
         /***** Lifecycle *****/
