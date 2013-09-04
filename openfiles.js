@@ -90,9 +90,9 @@
             var focussedPage = tabs.focussedPage;
             var selected;
 
-            root = activeTabs.map(function (tab) {
+            root = activeTabs.map(function (tab, i) {
                 return {
-                    name: tab.name,
+                    name: "GROUP " + (i+1), // tab.name (tab0 ...)
                     items: tab.getPages()
                         .filter(function(page){ return page.path && page.loaded; })
                         .map(function (page) {
