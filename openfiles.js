@@ -124,7 +124,7 @@
 
             root = activeTabs.map(function (tab, i) {
                 return {
-                    name: "GROUP " + (i+1), // tab.name (tab0 ...)
+                    // name: tab.name (tab0 ...)
                     items: tab.getPages()
                         .filter(function(page){ return page.path && page.loaded; })
                         .map(function (page) {
@@ -141,6 +141,9 @@
                 };
             }).filter(function (tab) {
                 return !!tab.items.length;
+            }).map(function (node, i) {
+                node.name = "GROUP " + (i+1);
+                return node;
             });
 
             // Hide the openfiles
@@ -156,10 +159,12 @@
             var treeHeight = ofTree.renderer.layerConfig.maxHeight + 3;
             var parentHeight = treeParent.getHeight();
 
-            if (treeHeight < parentHeight)
-                treeParent.setHeight(treeHeight);
-            else if (parentHeight < MAX_HEIGHT)
-                treeParent.setHeight(Math.min(treeHeight, MAX_HEIGHT));
+            if (parentHeight < MAX_HEIGHT) {
+                if (treeHeight < parentHeight)
+                    treeParent.setHeight(treeHeight);
+                else
+                    treeParent.setHeight(Math.min(treeHeight, MAX_HEIGHT));
+            }
 
             ofTree.resize(true);
             // ofTree.renderer.scrollCaretIntoView(ofDataProvider.$selectedNode, 0.5);
