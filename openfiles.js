@@ -27,18 +27,16 @@
 
         /***** Initialization *****/
 
-        var plugin = new Plugin("Ajax.org", main.consumes);
-        var emit   = plugin.getEmitter();
-
+        var plugin        = new Plugin("Ajax.org", main.consumes);
+        var emit          = plugin.getEmitter();
         var staticPrefix  = options.staticPrefix;
 
         // tree maximum height
-        var MAX_HEIGHT = window.outerHeight / 5;
+        var MAX_HEIGHT    = window.outerHeight / 5;
+        var showOpenFiles = true;
 
         // UI Elements
         var ofDataProvider, ofTree, treeParent, winFileTree;
-
-        var showOpenFiles = true;
 
         var loaded = false;
         function load(){
@@ -58,7 +56,7 @@
                 }
             }, plugin);
 
-            menus.addItemByPath("View/Open Files", new apf.item({
+            menus.addItemByPath("View/Open Files", new ui.item({
                 type    : "check",
                 checked : "[{settings.model}::user/openfiles/@show]",
                 command : "toggleOpenfiles"
@@ -107,6 +105,10 @@
                 else
                     hideOpenFiles();
 
+                var splitter = treeParent.parentNode.$handle;
+                splitter.on("dragmove", updateOpenFiles);
+                splitter.on("dragdrop", updateOpenFiles);
+
                 emit("draw");
             });
         }
@@ -118,7 +120,7 @@
                 return;
 
             draw();
-            var activeTabs = tabs.getTabs();
+            var activeTabs   = tabs.getTabs();
             var focussedPage = tabs.focussedPage;
             var selected;
 
@@ -129,10 +131,10 @@
                         .filter(function(page){ return page.path && page.loaded; })
                         .map(function (page) {
                         var node = {
-                            name: fs.getFilename(page.path),
-                            path: page.path,
+                            name : fs.getFilename(page.path),
+                            path : page.path,
                             items: [],
-                            page: page
+                            page : page
                          };
                          if (page === focussedPage)
                             selected = node;
@@ -150,6 +152,8 @@
             if (!root.length)
                 return hideOpenFiles();
 
+            treeParent.show();
+
             if (root.length === 1)
                 root = root[0];
 
@@ -165,6 +169,8 @@
                 else
                     treeParent.setHeight(Math.min(treeHeight, MAX_HEIGHT));
             }
+            else
+                treeParent.setHeight(treeParent.getHeight());
 
             ofTree.resize(true);
             // ofTree.renderer.scrollCaretIntoView(ofDataProvider.$selectedNode, 0.5);
@@ -176,10 +182,7 @@
         }
 
         function hideOpenFiles() {
-            if (treeParent) {
-                treeParent.setHeight(0);
-                winFileTree.$ext.style.top = 0;
-            }
+            treeParent && treeParent.hide();
         }
 
         function toggleOpenfiles(show) {
