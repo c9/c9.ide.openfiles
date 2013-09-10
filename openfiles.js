@@ -45,8 +45,8 @@
 
             // Hook events to get the focussed page
             tabs.on("focus.sync", updateOpenFiles);
-            tabs.on("page.destroy", updateOpenFiles);
-            tabs.on("page.order", updateOpenFiles);
+            tabs.on("pageDestroy", updateOpenFiles);
+            tabs.on("pageOrder", updateOpenFiles);
 
             commands.addCommand({
                 name: "toggleOpenfiles",
