@@ -44,7 +44,7 @@
             loaded = true;
 
             // Hook events to get the focussed page
-            tabs.on("focus.sync", updateOpenFiles);
+            tabs.on("focusSync", updateOpenFiles);
             tabs.on("pageDestroy", updateOpenFiles);
             tabs.on("pageOrder", updateOpenFiles);
 
