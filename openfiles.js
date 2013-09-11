@@ -43,10 +43,10 @@
             if (loaded) return false;
             loaded = true;
 
-            // Hook events to get the focussed page
+            // Hook events to get the focussed tab
             tabs.on("focusSync", updateOpenFiles);
-            tabs.on("pageDestroy", updateOpenFiles);
-            tabs.on("pageOrder", updateOpenFiles);
+            tabs.on("tabDestroy", updateOpenFiles);
+            tabs.on("tabOrder", updateOpenFiles);
 
             commands.addCommand({
                 name: "toggleOpenfiles",
@@ -120,7 +120,7 @@
                 return;
 
             draw();
-            var activeTabs   = tabs.getTabs();
+            var activeTabs   = tabs.getPanes();
             var focussedPage = tabs.focussedPage;
             var selected;
 
@@ -128,15 +128,15 @@
                 return {
                     // name: pane.name (tab0 ...)
                     items: pane.getPages()
-                        .filter(function(page){ return page.path && page.loaded; })
-                        .map(function (page) {
+                        .filter(function(tab){ return tab.path && tab.loaded; })
+                        .map(function (tab) {
                         var node = {
-                            name : fs.getFilename(page.path),
-                            path : page.path,
+                            name : fs.getFilename(tab.path),
+                            path : tab.path,
                             items: [],
-                            page : page
+                            tab : tab
                          };
-                         if (page === focussedPage)
+                         if (tab === focussedPage)
                             selected = node;
                         return node;
                     })
