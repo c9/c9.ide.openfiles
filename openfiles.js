@@ -121,13 +121,13 @@
 
             draw();
             var activeTabs   = tabs.getPanes();
-            var focussedPage = tabs.focussedPage;
+            var focussedTab = tabs.focussedTab;
             var selected;
 
             root = activeTabs.map(function (pane, i) {
                 return {
                     // name: pane.name (tab0 ...)
-                    items: pane.getPages()
+                    items: pane.getTabs()
                         .filter(function(tab){ return tab.path && tab.loaded; })
                         .map(function (tab) {
                         var node = {
@@ -136,7 +136,7 @@
                             items: [],
                             tab : tab
                          };
-                         if (tab === focussedPage)
+                         if (tab === focussedTab)
                             selected = node;
                         return node;
                     })
@@ -178,7 +178,7 @@
 
         function onSelect() {
             var node = ofDataProvider.$selectedNode;
-            tabs.focusPage(node.path);
+            tabs.focusTab(node.path);
         }
 
         function hideOpenFiles() {
