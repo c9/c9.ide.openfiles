@@ -124,10 +124,10 @@
             var focussedPage = tabs.focussedPage;
             var selected;
 
-            root = activeTabs.map(function (tab, i) {
+            root = activeTabs.map(function (pane, i) {
                 return {
-                    // name: tab.name (tab0 ...)
-                    items: tab.getPages()
+                    // name: pane.name (tab0 ...)
+                    items: pane.getPages()
                         .filter(function(page){ return page.path && page.loaded; })
                         .map(function (page) {
                         var node = {
@@ -141,8 +141,8 @@
                         return node;
                     })
                 };
-            }).filter(function (tab) {
-                return !!tab.items.length;
+            }).filter(function (pane) {
+                return !!pane.items.length;
             }).map(function (node, i) {
                 node.name = "GROUP " + (i+1);
                 return node;
