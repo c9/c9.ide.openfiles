@@ -7,14 +7,14 @@
 
  define(function(require, exports, module) {
     main.consumes = [
-        "plugin", "tabs", "menus", "commands", "settings", "tree", "fs", "ui"
+        "plugin", "tabManager", "menus", "commands", "settings", "tree", "fs", "ui"
     ];
     main.provides = ["openfiles"];
     return main;
 
     function main(options, imports, register) {
         var Plugin   = imports.plugin;
-        var tabs     = imports.tabs;
+        var tabs     = imports.tabManager;
         var menus    = imports.menus;
         var commands = imports.commands;
         var settings = imports.settings;
