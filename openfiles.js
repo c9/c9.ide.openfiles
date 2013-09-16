@@ -94,6 +94,7 @@
                 ofTree = new Tree(treeParent.$int);
                 ofDataProvider = new TreeData();
                 ofTree.renderer.setScrollMargin(0, 10);
+                ofTree.renderer.setTheme({cssClass: "filetree"});
                 // Assign the dataprovider
                 ofTree.setDataProvider(ofDataProvider);
                 // Some global render metadata
@@ -146,7 +147,7 @@
             if (!ofTree)
                 return;
 
-            var activePanes   = tabs.getPanes(tabs.container);
+            var activePanes = tabs.getPanes(tabs.container);
             var focussedTab = tabs.focussedTab;
             // focussedTab can be the terminal or output views
             if (focussedTab && activePanes.indexOf(focussedTab.tab) === -1 && activePanes.length)
@@ -195,8 +196,8 @@
             ofDataProvider.setRoot(root, selected);
             ofTree.resize(true);
 
-            var maxHeight   = window.outerHeight / 5;
-            var treeHeight   = ofTree.renderer.layerConfig.maxHeight + 3;
+            var maxHeight = window.outerHeight / 5;
+            var treeHeight = ofTree.renderer.layerConfig.maxHeight + 3;
 
             if (dragged)
                 treeParent.setHeight(Math.min(treeParent.getHeight(), treeHeight));

@@ -4,7 +4,7 @@
     height: 14px;
     position: absolute;
     right: 10px;
-    background: url(images/close_tab_btn.png) no-repeat 0 0;
+    background: url(images/close_tab_btn.png) no-repeat 0 -14px;
     cursor: pointer;
     z-index: 10;
     -webkit-animation: none;
@@ -14,7 +14,7 @@
 
 .openfiles.ace_tree .tree-row strong.close:hover,
 .openfiles.ace_tree .tree-row strong.close:active {
-    background-position: -14px 0;
+    background-position: -14px -14px;
 }
 
 .openfiles.ace_tree .tree-row strong.changed,
@@ -36,3 +36,7 @@
 .openfiles.ace_tree .tree-row strong.error { background-position : -8px 0; }
 .openfiles.ace_tree .tree-row strong.saving { background-position : -16px 0; }
 .openfiles.ace_tree .tree-row strong.saved { background-position : -24px 0; }
+
+.filetree.openfiles.ace_tree {
+    background : #303130
+}
