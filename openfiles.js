@@ -1,13 +1,14 @@
 /**
  * Openfiles plugin for Cloud9 IDE
- *
- * @copyright 2011, Ajax.org B.V.
+ * @author Mostafa Eweda <mostafa@c9.io>
+ * @copyright 2013, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-
+"use strict";
  define(function(require, exports, module) {
     main.consumes = [
-        "plugin", "tabs", "menus", "commands", "settings", "tree", "fs", "ui"
+        "plugin", "tabs", "menus", "commands", "settings",
+        "tree", "fs", "save", "ui"
     ];
     main.provides = ["openfiles"];
     return main;
@@ -20,6 +21,7 @@
         var settings = imports.settings;
         var tree     = imports.tree;
         var fs       = imports.fs;
+        var save     = imports.save;
         var ui       = imports.ui;
 
         var Tree     = require("ace_tree/tree");
@@ -32,8 +34,8 @@
         var staticPrefix  = options.staticPrefix;
 
         // tree maximum height
-        var MAX_HEIGHT    = window.outerHeight / 5;
         var showOpenFiles = true;
+        var dragged       = false;
 
         // UI Elements
         var ofDataProvider, ofTree, treeParent, winFileTree;
@@ -44,15 +46,16 @@
             loaded = true;
 
             // Hook events to get the focussed page
-            tabs.on("focus.sync", updateOpenFiles);
-            tabs.on("page.destroy", updateOpenFiles);
-            tabs.on("page.order", updateOpenFiles);
+            tabs.on("focus.sync", update);
+            tabs.on("page.destroy", update);
+            tabs.on("page.order", update);
+
+            save.on("page.savingstate", refresh);
 
             commands.addCommand({
                 name: "toggleOpenfiles",
                 exec: function() {
-                    settings.set("user/openfiles/@show", !showOpenFiles);
-                    toggleOpenfiles(!showOpenFiles);
+                    toggleOpenfiles();
                 }
             }, plugin);
 
@@ -65,8 +68,8 @@
             settings.on("read", function(e){
                 // Defaults
                 settings.setDefaults("user/openfiles", [["show", "true"]]);
-
-                toggleOpenfiles(settings.getBool("user/openfiles/@show"));
+                showOpenFiles = settings.getBool("user/openfiles/@show");
+                updateVisibility(showOpenFiles);
             }, plugin);
 
             draw();
@@ -78,7 +81,7 @@
             drawn = true;
 
             // ace_tree customization '.openfiles'
-            // ui.insertCss(require("text!./openfiles.css"), staticPrefix, plugin);
+            ui.insertCss(require("text!./openfiles.css"), staticPrefix, plugin);
 
             tree.getElement("winOpenfiles", function(winOpenfiles) {
                 treeParent = winOpenfiles;
@@ -100,14 +103,31 @@
                     setTimeout(onSelect, 40);
                 });
 
+                // APF + DOM HACK: close page with confirmation
+                ofTree.on("mousedown", function(e){
+                    var domTarget = e.domEvent.target;
+                    var pos = e.getDocumentPosition();
+                    var node = ofDataProvider.findItemAtOffset(pos.y);
+                    if (! (node && node.path && domTarget && domTarget.className === "close"))
+                        return;
+                    var amlPage = node.page.aml;
+                    amlPage.parentNode.remove(amlPage, {});
+                });
+
                 if (showOpenFiles)
-                    updateOpenFiles();
+                    update();
                 else
                     hideOpenFiles();
 
                 var splitter = treeParent.parentNode.$handle;
-                splitter.on("dragmove", updateOpenFiles);
-                splitter.on("dragdrop", updateOpenFiles);
+                splitter.on("dragmove", function() {
+                    dragged = true;
+                    update();
+                });
+                splitter.on("dragdrop", function () {
+                    dragged = true;
+                    update();
+                });
 
                 emit("draw");
             });
@@ -115,16 +135,28 @@
 
         /***** Methods *****/
 
-        function updateOpenFiles() {
+        function update() {
             if (!showOpenFiles)
                 return;
 
             draw();
-            var activeTabs   = tabs.getTabs();
-            var focussedPage = tabs.focussedPage;
-            var selected;
 
-            root = activeTabs.map(function (tab, i) {
+            if (!ofTree)
+                return;
+
+            var activeTabs   = tabs.getTabs(tabs.container);
+            var focussedPage = tabs.focussedPage;
+            // focussedPage can be the terminal or output views
+            if (focussedPage && activeTabs.indexOf(focussedPage.tab) === -1 && activeTabs.length)
+                focussedPage = activeTabs[0].getPage();
+
+            // unhook document change update listeners
+            tabs.getPages().forEach(function (page) {
+                page.document && page.document.off("changed", refresh);
+            });
+
+            var selected;
+            var root = activeTabs.map(function (tab, i) {
                 return {
                     // name: tab.name (tab0 ...)
                     items: tab.getPages()
@@ -136,14 +168,14 @@
                             items: [],
                             page : page
                          };
+                         page.document.on("changed", refresh);
                          if (page === focussedPage)
                             selected = node;
                         return node;
                     })
                 };
-            }).filter(function (tab) {
-                return !!tab.items.length;
-            }).map(function (node, i) {
+            }).filter(function(tab){ return tab.items.length; })
+              .map(function (node, i) {
                 node.name = "GROUP " + (i+1);
                 return node;
             });
@@ -160,20 +192,34 @@
             ofDataProvider.setRoot(root, selected);
             ofTree.resize(true);
 
-            var treeHeight = ofTree.renderer.layerConfig.maxHeight + 3;
-            var parentHeight = treeParent.getHeight();
+            var maxHeight   = window.outerHeight / 5;
+            var treeHeight   = ofTree.renderer.layerConfig.maxHeight + 3;
 
-            if (parentHeight < MAX_HEIGHT) {
-                if (treeHeight < parentHeight)
-                    treeParent.setHeight(treeHeight);
-                else
-                    treeParent.setHeight(Math.min(treeHeight, MAX_HEIGHT));
-            }
+            if (dragged)
+                treeParent.setHeight(Math.min(treeParent.getHeight(), treeHeight));
             else
-                treeParent.setHeight(treeParent.getHeight());
+                treeParent.setHeight(Math.min(treeHeight, maxHeight));
 
             ofTree.resize(true);
-            // ofTree.renderer.scrollCaretIntoView(ofDataProvider.$selectedNode, 0.5);
+            ofTree.renderer.scrollCaretIntoView(ofDataProvider.$selectedNode, 0.5);
+        }
+
+        function refresh() {
+            if (!showOpenFiles || !ofDataProvider)
+                return;
+            ofDataProvider._signal("change");
+        }
+
+        function findNode(json, path) {
+            for (var i = 0; i < json.length; i++) {
+                var elem = json[i];
+                if(path === elem.path)
+                    return elem;
+                var inChilren = findNode(elem.items, path);
+                if (inChilren)
+                    return inChilren;
+            }
+            return null;
         }
 
         function onSelect() {
@@ -185,16 +231,19 @@
             treeParent && treeParent.hide();
         }
 
-        function toggleOpenfiles(show) {
-            if (show === showOpenFiles)
+        function toggleOpenfiles() {
+            showOpenFiles = !showOpenFiles;
+            settings.set("user/openfiles/@show", showOpenFiles);
+            updateVisibility(showOpenFiles);
+        }
+
+        function updateVisibility(show) {
+            if (treeParent && show === treeParent.visible)
                 return;
-            showOpenFiles = show;
-
-            if (!show)
-                hideOpenFiles();
+            if (show)
+                update();
             else
-                updateOpenFiles();
-
+                hideOpenFiles();
             emit("visible", {value: show});
         }
 
@@ -213,10 +262,46 @@
             drawn  = false;
         });
 
+        function show() {
+            updateVisibility(true);
+        }
+
+        function hide() {
+            updateVisibility(false);
+        }
+
         /***** Register and define API *****/
         /**
-         **/
+         * Openfiles view for Cloud9 IDE
+         */
         plugin.freezePublicAPI({
+            /**
+             * Show the openfiles tree
+             */
+            show: show,
+
+            /**
+             * Hide the openfiles tree
+             */
+            hide: hide,
+
+            /**
+             * Find a node by path in the tree
+             */
+            findNode: findNode,
+
+            /**
+             * Trigger a compelete update of the openfiles view
+             * Only applies when openfiles is visible
+             */
+            update: update,
+
+            /**
+             * Re-render the viewed part of the tree without having to re-create the tree data
+             * Example usage: when the saving state or document content changed
+             * Only applies when openfiles is visible
+             */
+            refresh: refresh
         });
 
         register(null, {

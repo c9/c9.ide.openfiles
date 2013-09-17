@@ -37,6 +37,20 @@ define(function(require, exports, module) {
             this._signal("change");
         };
 
+        this.getIconHTML = function (datarow) {
+            var page = datarow.page;
+            if (!page)
+                return "";
+
+            var html = "<strong class='close'> </strong>";
+
+            var className = page.document.meta.saving || (page.document.changed && "changed");
+            if (className)
+                html += "<strong class='" + className + "'> </strong>";
+
+            return html;
+        };
+
     }).call(DataProvider.prototype);
 
     return DataProvider;
