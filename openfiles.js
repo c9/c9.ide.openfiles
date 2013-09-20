@@ -148,7 +148,7 @@
             var focussedTab = tabs.focussedTab;
             // focussedTab can be the terminal or output views
             if (focussedTab && activePanes.indexOf(focussedTab.tab) === -1 && activePanes.length)
-                focussedTab = activePanes[0].getPage();
+                focussedTab = activePanes[0].getTab();
 
             // unhook document change update listeners
             tabs.getTabs().forEach(function (tab) {
