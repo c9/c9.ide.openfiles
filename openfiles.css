@@ -1,0 +1,38 @@
+.openfiles.ace_tree .tree-row strong.close {
+    margin-top: 3px;
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    right: 10px;
+    background: url(images/close_tab_btn.png) no-repeat 0 0;
+    cursor: pointer;
+    z-index: 10;
+    -webkit-animation: none;
+    -moz-animation: none;
+    animation: none;
+}
+
+.openfiles.ace_tree .tree-row strong.close:hover,
+.openfiles.ace_tree .tree-row strong.close:active {
+    background-position: -14px 0;
+}
+
+.openfiles.ace_tree .tree-row strong.changed,
+.openfiles.ace_tree .tree-row strong.saving,
+.openfiles.ace_tree .tree-row strong.saved,
+.openfiles.ace_tree .tree-row strong.error {
+    background : url(images/tabsave.png) no-repeat 0 2px;
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin: 6px 0 0 -8px;
+    
+    -webkit-animation: none;
+       -moz-animation: none;
+            animation: none;
+}
+
+.openfiles.ace_tree .tree-row strong.changed { background-position : 0 0; }
+.openfiles.ace_tree .tree-row strong.error { background-position : -8px 0; }
+.openfiles.ace_tree .tree-row strong.saving { background-position : -16px 0; }
+.openfiles.ace_tree .tree-row strong.saved { background-position : -24px 0; }
