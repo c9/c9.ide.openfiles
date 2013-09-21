@@ -7,15 +7,15 @@
 "use strict";
  define(function(require, exports, module) {
     main.consumes = [
-        "plugin", "tabs", "menus", "commands", "settings",
+        "Plugin", "tabManager", "menus", "commands", "settings",
         "tree", "fs", "save", "ui"
     ];
     main.provides = ["openfiles"];
     return main;
 
     function main(options, imports, register) {
-        var Plugin   = imports.plugin;
-        var tabs     = imports.tabs;
+        var Plugin   = imports.Plugin;
+        var tabs     = imports.tabManager;
         var menus    = imports.menus;
         var commands = imports.commands;
         var settings = imports.settings;
@@ -45,12 +45,12 @@
             if (loaded) return false;
             loaded = true;
 
-            // Hook events to get the focussed page
-            tabs.on("focus.sync", update);
-            tabs.on("page.destroy", update);
-            tabs.on("page.order", update);
+            // Hook events to get the focussed tab
+            tabs.on("focusSync", update);
+            tabs.on("tabDestroy", update);
+            tabs.on("tabOrder", update);
 
-            save.on("page.savingstate", refresh);
+            save.on("tabSavingState", refresh);
 
             commands.addCommand({
                 name: "toggleOpenfiles",
@@ -144,38 +144,40 @@
             if (!ofTree)
                 return;
 
-            var activeTabs   = tabs.getTabs(tabs.container);
-            var focussedPage = tabs.focussedPage;
-            // focussedPage can be the terminal or output views
-            if (focussedPage && activeTabs.indexOf(focussedPage.tab) === -1 && activeTabs.length)
-                focussedPage = activeTabs[0].getPage();
+            var activePanes   = tabs.getPanes(tabs.container);
+            var focussedTab = tabs.focussedTab;
+            // focussedTab can be the terminal or output views
+            if (focussedTab && activePanes.indexOf(focussedTab.tab) === -1 && activePanes.length)
+                focussedTab = activePanes[0].getTab();
 
             // unhook document change update listeners
-            tabs.getPages().forEach(function (page) {
-                page.document && page.document.off("changed", refresh);
+            tabs.getTabs().forEach(function (tab) {
+                tab.document && tab.document.off("changed", refresh);
             });
 
             var selected;
-            var root = activeTabs.map(function (tab, i) {
+            var root = activePanes.map(function (pane, i) {
                 return {
-                    // name: tab.name (tab0 ...)
-                    items: tab.getPages()
-                        .filter(function(page){ return page.path && page.loaded; })
-                        .map(function (page) {
+                    // name: pane.name (tab0 ...)
+                    items: pane.getTabs()
+                      .filter(function(tab){ return tab.path && tab.loaded; })
+                      .map(function (tab) {
                         var node = {
-                            name : fs.getFilename(page.path),
-                            path : page.path,
+                            name : fs.getFilename(tab.path),
+                            path : tab.path,
                             items: [],
-                            page : page
+                            tab : tab
                          };
-                         page.document.on("changed", refresh);
-                         if (page === focussedPage)
+                         
+                         tab.document.on("changed", refresh);
+                         if (tab = focussedTab)
                             selected = node;
                         return node;
                     })
                 };
-            }).filter(function(tab){ return tab.items.length; })
-              .map(function (node, i) {
+            }).filter(function(pane){ 
+                return pane.items.length; 
+            }).map(function (node, i) {
                 node.name = "GROUP " + (i+1);
                 return node;
             });
@@ -224,7 +226,7 @@
 
         function onSelect() {
             var node = ofDataProvider.$selectedNode;
-            tabs.focusPage(node.path);
+            tabs.focusTab(node.path);
         }
 
         function hideOpenFiles() {
