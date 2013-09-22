@@ -113,6 +113,8 @@
                     var amlPage = node.page.aml;
                     amlPage.parentNode.remove(amlPage, {});
                 });
+                
+                ofTree.focus = function() {};
 
                 if (showOpenFiles)
                     update();
@@ -166,12 +168,11 @@
                             name : fs.getFilename(tab.path),
                             path : tab.path,
                             items: [],
-                            tab : tab
-                         };
+                            tab : tab,
+                            isSelected: tab == focussedTab
+                        };
                          
-                         tab.document.on("changed", refresh);
-                         if (tab = focussedTab)
-                            selected = node;
+                        tab.document.on("changed", refresh);                        
                         return node;
                     })
                 };

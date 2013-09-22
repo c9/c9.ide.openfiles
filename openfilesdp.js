@@ -38,13 +38,13 @@ define(function(require, exports, module) {
         };
 
         this.getIconHTML = function (datarow) {
-            var page = datarow.page;
-            if (!page)
+            var tab = datarow.tab;
+            if (!tab)
                 return "";
 
             var html = "<strong class='close'> </strong>";
 
-            var className = page.document.meta.saving || (page.document.changed && "changed");
+            var className = tab.document.meta.saving || (tab.document.changed && "changed");
             if (className)
                 html += "<strong class='" + className + "'> </strong>";
 
