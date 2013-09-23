@@ -1,9 +1,9 @@
- define(function(require, exports, module) {
+define(function(require, exports, module) {
     "use strict";
     
     main.consumes = [
         "Plugin", "tabManager", "menus", "commands", "settings",
-        "tree", "fs", "save", "ui"
+        "tree", "save", "ui"
     ];
     main.provides = ["openfiles"];
     return main;
@@ -15,12 +15,12 @@
         var commands = imports.commands;
         var settings = imports.settings;
         var tree     = imports.tree;
-        var fs       = imports.fs;
         var save     = imports.save;
         var ui       = imports.ui;
 
         var Tree     = require("ace_tree/tree");
         var TreeData = require("./openfilesdp");
+        var basename = require("path").basename;
 
         /***** Initialization *****/
 
@@ -161,7 +161,7 @@
                       .filter(function(tab){ return tab.path && tab.loaded; })
                       .map(function (tab) {
                         var node = {
-                            name : fs.getFilename(tab.path),
+                            name : basename(tab.path),
                             path : tab.path,
                             items: [],
                             tab : tab,
