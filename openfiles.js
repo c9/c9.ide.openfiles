@@ -1,11 +1,6 @@
-/**
- * Openfiles plugin for Cloud9 IDE
- * @author Mostafa Eweda <mostafa@c9.io>
- * @copyright 2013, Ajax.org B.V.
- * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
- */
-"use strict";
  define(function(require, exports, module) {
+    "use strict";
+    
     main.consumes = [
         "Plugin", "tabManager", "menus", "commands", "settings",
         "tree", "fs", "save", "ui"
@@ -274,33 +269,32 @@
         }
 
         /***** Register and define API *****/
+        
         /**
-         * Openfiles view for Cloud9 IDE
+         * Displays the open files above the tree.
+         * 
+         * @singleton
          */
         plugin.freezePublicAPI({
             /**
-             * Show the openfiles tree
+             * Show the openfiles panel
              */
             show: show,
 
             /**
-             * Hide the openfiles tree
+             * Hide the openfiles panel
              */
             hide: hide,
 
             /**
-             * Find a node by path in the tree
-             */
-            findNode: findNode,
-
-            /**
-             * Trigger a compelete update of the openfiles view
-             * Only applies when openfiles is visible
+             * Trigger a complete update of the openfiles view, only when the 
+             * openfiles panel is visible.
              */
             update: update,
 
             /**
-             * Re-render the viewed part of the tree without having to re-create the tree data
+             * Rerender the viewed part of the tree without having to recreate 
+             * the tree data.
              * Example usage: when the saving state or document content changed
              * Only applies when openfiles is visible
              */
