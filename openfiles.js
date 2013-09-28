@@ -98,17 +98,17 @@
                     setTimeout(onSelect, 40);
                 });
 
-                // APF + DOM HACK: close page with confirmation
+                // APF + DOM HACK: close tab with confirmation
                 ofTree.on("mousedown", function(e){
                     var domTarget = e.domEvent.target;
                     var pos = e.getDocumentPosition();
                     var node = ofDataProvider.findItemAtOffset(pos.y);
                     if (! (node && node.path && domTarget && domTarget.className === "close"))
                         return;
-                    var amlPage = node.page.aml;
-                    amlPage.parentNode.remove(amlPage, {});
+                    var amlTab = node.tab.aml;
+                    amlTab.parentNode.remove(amlTab, {});
                 });
-                
+
                 ofTree.focus = function() {};
 
                 if (showOpenFiles)
