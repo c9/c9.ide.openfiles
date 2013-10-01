@@ -29,7 +29,7 @@
         var staticPrefix  = options.staticPrefix;
 
         // tree maximum height
-        var showOpenFiles = true;
+        var showOpenFiles = false;
         var dragged       = false;
 
         // UI Elements
@@ -62,7 +62,7 @@
 
             settings.on("read", function(e){
                 // Defaults
-                settings.setDefaults("user/openfiles", [["show", "true"]]);
+                settings.setDefaults("user/openfiles", [["show", "false"]]);
                 showOpenFiles = settings.getBool("user/openfiles/@show");
                 updateVisibility(showOpenFiles);
             }, plugin);
