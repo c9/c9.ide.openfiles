@@ -26,15 +26,20 @@ define(function(require, exports, module) {
             if (Array.isArray(root))
                 root = {items: root};
             this.root = root || {};
-            if (this.$selectedNode)
-                this.$selectedNode.isSelected = false;
-            this.$selectedNode = selected || this.root;
-            this.$selectedNode.isSelected = true;
+            this.selectNode(selected);
             this.visibleItems = [];
             this.open(this.root, true);
 
             // @TODO Deal with selection
             this._signal("change");
+        };
+
+        this.selectNode = function (node) {
+            if (this.$selectedNode)
+                this.$selectedNode.isSelected = false;
+            node = node || this.root;
+            this.$selectedNode = node;
+            node.isSelected = true;
         };
 
         this.getIconHTML = function (datarow) {

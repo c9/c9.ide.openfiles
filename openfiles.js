@@ -95,7 +95,7 @@ define(function(require, exports, module) {
                 // Some global render metadata
                 ofDataProvider.staticPrefix = staticPrefix;
 
-                ofDataProvider.on("select", function(){
+                ofTree.on("changeSelection", function(){
                     setTimeout(onSelect, 40);
                 });
 
@@ -222,7 +222,8 @@ define(function(require, exports, module) {
         }
 
         function onSelect() {
-            var node = ofDataProvider.$selectedNode;
+            var node = ofTree.selection.getCursor();
+            ofDataProvider.selectNode(node);
             tabs.focusTab(node.path);
         }
 
