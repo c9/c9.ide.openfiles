@@ -145,7 +145,7 @@ define(function(require, exports, module) {
             var activePanes = tabs.getPanes(tabs.container);
             var focussedTab = tabs.focussedTab;
             // focussedTab can be the terminal or output views
-            if (focussedTab && activePanes.indexOf(focussedTab.tab) === -1 && activePanes.length)
+            if (focussedTab && activePanes.indexOf(focussedTab.pane) === -1 && activePanes.length)
                 focussedTab = activePanes[0].getTab();
 
             // unhook document change update listeners
