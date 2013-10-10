@@ -22,24 +22,15 @@ define(function(require, exports, module) {
             return "No open files";
         };
 
-        this.setRoot = function(root, selected){
+        this.setRoot = function(root){
             if (Array.isArray(root))
                 root = {items: root};
             this.root = root || {};
-            this.selectNode(selected);
             this.visibleItems = [];
             this.open(this.root, true);
 
             // @TODO Deal with selection
             this._signal("change");
-        };
-
-        this.selectNode = function (node) {
-            if (this.$selectedNode)
-                this.$selectedNode.isSelected = false;
-            node = node || this.root;
-            this.$selectedNode = node;
-            node.isSelected = true;
         };
 
         this.getIconHTML = function (datarow) {

@@ -188,7 +188,9 @@ define(function(require, exports, module) {
             if (root.length === 1)
                 root = root[0];
 
-            ofDataProvider.setRoot(root, selected);
+            ofDataProvider.setRoot(root);
+            ofDataProvider.selection.selectNode(selected);
+
             ofTree.resize(true);
 
             var maxHeight = window.outerHeight / 5;
@@ -200,7 +202,7 @@ define(function(require, exports, module) {
                 treeParent.setHeight(Math.min(treeHeight, maxHeight));
 
             ofTree.resize(true);
-            ofTree.renderer.scrollCaretIntoView(ofDataProvider.$selectedNode, 0.5);
+            ofTree.renderer.scrollCaretIntoView(selected, 0.5);
         }
 
         function refresh() {
@@ -223,7 +225,6 @@ define(function(require, exports, module) {
 
         function onSelect() {
             var node = ofTree.selection.getCursor();
-            ofDataProvider.selectNode(node);
             tabs.focusTab(node.path);
         }
 
