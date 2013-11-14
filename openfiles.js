@@ -164,16 +164,17 @@ define(function(require, exports, module) {
                             name : basename(tab.path),
                             path : tab.path,
                             items: [],
-                            tab : tab,
-                            isSelected: tab == focussedTab
+                            tab : tab
                         };
+                        if (tab == focussedTab)
+                            selected = node;
                          
-                        tab.document.on("changed", refresh);                        
+                        tab.document.on("changed", refresh);
                         return node;
                     })
                 };
-            }).filter(function(pane){ 
-                return pane.items.length; 
+            }).filter(function(pane){
+                return pane.items.length;
             }).map(function (node, i) {
                 node.name = "GROUP " + (i+1);
                 return node;

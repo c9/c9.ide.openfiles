@@ -1,3 +1,7 @@
+.openfiles.ace_tree .ace_tree_layer {
+    pointer-events: auto;
+}
+
 .openfiles.ace_tree .tree-row strong.close {
     margin-top: 3px;
     width: 14px;
