@@ -1,7 +1,3 @@
-.openfiles.ace_tree .ace_tree_layer {
-    pointer-events: auto;
-}
-
 .openfiles.ace_tree .tree-row strong.close {
     margin-top: 3px;
     width: 14px;
@@ -9,6 +5,7 @@
     position: absolute;
     right: 10px;
     background: url(images/close_tab_btn.png) no-repeat 0 -14px;
+    pointer-events: auto;
     cursor: pointer;
     z-index: 10;
     -webkit-animation: none;
