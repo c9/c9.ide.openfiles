@@ -4,7 +4,7 @@
     height: 14px;
     position: absolute;
     right: 10px;
-    background: url(images/close_tab_btn.png) no-repeat 0 -14px;
+    background: url("@{image-path}/close_tab_btn.png") no-repeat 0 -14px;
     pointer-events: auto;
     cursor: pointer;
     z-index: 10;
@@ -22,7 +22,7 @@
 .openfiles.ace_tree .tree-row strong.saving,
 .openfiles.ace_tree .tree-row strong.saved,
 .openfiles.ace_tree .tree-row strong.error {
-    background : url(images/tabsave.png) no-repeat 0 2px;
+    background : url("@{image-path}/tabsave.png") no-repeat 0 2px;
     display: inline-block;
     width: 8px;
     height: 8px;
