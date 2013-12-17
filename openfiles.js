@@ -95,7 +95,7 @@ define(function(require, exports, module) {
                 // Some global render metadata
                 ofDataProvider.staticPrefix = staticPrefix;
 
-                ofTree.on("changeSelection", function(){
+                ofTree.on("userSelect", function(){
                     setTimeout(onSelect, 40);
                 });
 
