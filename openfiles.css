@@ -39,5 +39,5 @@
 .openfiles.ace_tree .tree-row strong.saved { background-position : -24px 0; }
 
 .filetree.openfiles.ace_tree {
-    background : #303130
+    background : @panel-background;
 }
