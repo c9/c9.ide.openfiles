@@ -41,9 +41,10 @@ define(function(require, exports, module) {
             loaded = true;
 
             // Hook events to get the focussed tab
-            tabs.on("focusSync", update);
-            tabs.on("tabDestroy", update);
-            tabs.on("tabOrder", update);
+            tabs.on("focusSync", delayedUpdate);
+            tabs.on("tabDestroy", delayedUpdate);
+            tabs.on("tabReparent", delayedUpdate);
+            tabs.on("tabOrder", delayedUpdate);
 
             save.on("tabSavingState", refresh);
 
@@ -113,18 +114,18 @@ define(function(require, exports, module) {
                 ofTree.focus = function() {};
 
                 if (showOpenFiles)
-                    update();
+                    delayedUpdate();
                 else
                     hideOpenFiles();
 
                 var splitter = treeParent.parentNode.$handle;
                 splitter.on("dragmove", function() {
                     dragged = true;
-                    update();
+                    delayedUpdate();
                 });
                 splitter.on("dragdrop", function () {
                     dragged = true;
-                    update();
+                    delayedUpdate();
                 });
 
                 emit("draw");
@@ -132,6 +133,16 @@ define(function(require, exports, module) {
         }
 
         /***** Methods *****/
+        
+        var updateTimer;
+        function delayedUpdate() {
+            if (updateTimer)
+                return;
+            updateTimer = setTimeout(function() {
+                updateTimer = null;
+                update();
+            }, 10);
+        }
 
         function update() {
             if (!showOpenFiles)
