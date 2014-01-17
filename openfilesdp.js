@@ -21,6 +21,10 @@ define(function(require, exports, module) {
         this.getEmptyMessage = function(){
             return "No open files";
         };
+        
+        this.getClassName = function(datarow){
+            return datarow.children.length ? "group" : "";
+        }
 
         this.setRoot = function(root){
             if (Array.isArray(root))
@@ -38,11 +42,8 @@ define(function(require, exports, module) {
             if (!tab)
                 return "";
 
-            var html = "<strong class='close'> </strong>";
-
             var className = tab.document.meta.saving || (tab.document.changed && "changed");
-            if (className)
-                html += "<strong class='" + className + "'> </strong>";
+            var html = "<strong class='close " + className + "'> </strong>";
 
             return html;
         };

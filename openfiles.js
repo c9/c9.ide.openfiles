@@ -3,7 +3,7 @@ define(function(require, exports, module) {
     
     main.consumes = [
         "Plugin", "tabManager", "menus", "commands", "settings",
-        "tree", "save", "ui"
+        "tree", "save", "ui", "c9"
     ];
     main.provides = ["openfiles"];
     return main;
@@ -42,7 +42,8 @@ define(function(require, exports, module) {
 
             // Hook events to get the focussed tab
             tabs.on("focusSync", delayedUpdate);
-            tabs.on("tabDestroy", delayedUpdate);
+            // tabs.on("tabDestroy", delayedUpdate);
+            tabs.on("tabAfterClose", update);
             tabs.on("tabReparent", delayedUpdate);
             tabs.on("tabOrder", delayedUpdate);
 
@@ -79,17 +80,38 @@ define(function(require, exports, module) {
             // ace_tree customization '.openfiles'
             ui.insertCss(require("text!./openfiles.css"), staticPrefix, plugin);
 
+            tree.getElement("mnuFilesSettings", function(mnuFilesSettings) {
+                ui.insertByIndex(mnuFilesSettings, new ui.item({
+                    caption : "Hide Workspace Files",
+                    type    : "check",
+                    checked : "[{settings.model}::state/projecttree/@hidetree]",
+                    onclick : function(e){
+                        if (this.checked)
+                            ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
+                        else
+                            ui.setStyleClass(treeParent.parentNode.$int, "", ["hidetree"]);
+                    }
+                }), 10, plugin);
+                ui.insertByIndex(mnuFilesSettings, new ui.divider(), 20, plugin);
+            });
+            
             tree.getElement("winOpenfiles", function(winOpenfiles) {
                 treeParent = winOpenfiles;
+                
+                if (settings.getBool("state/projecttree/@hidetree"))
+                    ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
 
                 tree.getElement("winFileTree", function(winFileTreeL) {
                     winFileTree = winFileTreeL;
                 });
+                
+                var div = document.createElement("div");
+                treeParent.$int.appendChild(div);
 
                 // Create the Ace Tree
-                ofTree = new Tree(treeParent.$int);
+                ofTree = new Tree(div);
                 ofDataProvider = new TreeData();
-                ofTree.renderer.setScrollMargin(0, 10);
+                // ofTree.renderer.setScrollMargin(0, 10);
                 ofTree.renderer.setTheme({cssClass: "filetree"});
                 // Assign the dataprovider
                 ofTree.setDataProvider(ofDataProvider);
@@ -105,8 +127,14 @@ define(function(require, exports, module) {
                     var domTarget = e.domEvent.target;
                     var pos = e.getDocumentPosition();
                     var node = ofDataProvider.findItemAtOffset(pos.y);
-                    if (! (node && node.path && domTarget && domTarget.className === "close"))
+                    if (node.children.length && !~domTarget.className.indexOf("toggler")) {
+                        e.preventDefault();
                         return;
+                    }
+                    
+                    if (! (node && node.path && domTarget && ~domTarget.className.indexOf("close")))
+                        return;
+                    
                     var amlTab = node.tab.aml;
                     amlTab.parentNode.remove(amlTab, {});
                 });
@@ -114,19 +142,10 @@ define(function(require, exports, module) {
                 ofTree.focus = function() {};
 
                 if (showOpenFiles)
-                    delayedUpdate();
+                    tabs.on("ready", function(){ update(); });
                 else
                     hideOpenFiles();
-
-                var splitter = treeParent.parentNode.$handle;
-                splitter.on("dragmove", function() {
-                    dragged = true;
-                    delayedUpdate();
-                });
-                splitter.on("dragdrop", function () {
-                    dragged = true;
-                    delayedUpdate();
-                });
+                    
 
                 emit("draw");
             });
@@ -169,13 +188,15 @@ define(function(require, exports, module) {
                 return {
                     // name: pane.name (tab0 ...)
                     items: pane.getTabs()
-                      .filter(function(tab){ return tab.path && tab.loaded; })
+                      .filter(function(tab){ 
+                          return tab.path && tab.loaded && !tab.meta.$closing
+                      })
                       .map(function (tab) {
                         var node = {
-                            name : basename(tab.path),
-                            path : tab.path,
-                            items: [],
-                            tab : tab
+                            name  : basename(tab.path),
+                            path  : tab.path,
+                            items : [],
+                            tab   : tab
                         };
                         if (tab == focussedTab)
                             selected = node;
@@ -205,15 +226,16 @@ define(function(require, exports, module) {
 
             ofTree.resize(true);
 
-            var maxHeight = window.outerHeight / 5;
-            var treeHeight = ofTree.renderer.layerConfig.maxHeight + 3;
+            var maxHeight = treeParent.parentNode.$int.offsetHeight * 3/4;
+            var treeHeight = ofTree.renderer.layerConfig.maxHeight + 17;
 
-            if (dragged)
-                treeParent.setHeight(Math.min(treeParent.getHeight(), treeHeight));
-            else
-                treeParent.setHeight(Math.min(treeHeight, maxHeight));
+            treeParent.$int.style.height = dragged
+                ? Math.min(treeParent.getHeight(), treeHeight) + "px"
+                : Math.min(treeHeight, maxHeight) + "px";
 
             ofTree.resize(true);
+            tree.resize();
+            
             ofTree.renderer.scrollCaretIntoView(selected, 0.5);
         }
 
@@ -261,6 +283,7 @@ define(function(require, exports, module) {
         }
 
         /***** Lifecycle *****/
+        
         plugin.on("load", function(){
             load();
         });

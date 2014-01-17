@@ -1,9 +1,9 @@
-.openfiles.ace_tree .tree-row strong.close {
-    margin-top: 3px;
+.openfiles .ace_tree .tree-row strong.close {
+    margin-top: 2px;
     width: 14px;
     height: 14px;
-    position: absolute;
-    right: 10px;
+    position: relative;
+    right: 2px;
     background: url("@{image-path}/close_tab_btn.png") no-repeat 0 -14px;
     pointer-events: auto;
     cursor: pointer;
@@ -11,33 +11,67 @@
     -webkit-animation: none;
     -moz-animation: none;
     animation: none;
+    display: inline-block;
+    vertical-align: middle;
 }
 
-.openfiles.ace_tree .tree-row strong.close:hover,
-.openfiles.ace_tree .tree-row strong.close:active {
-    background-position: -14px -14px;
+.openfiles .ace_tree .tree-row span{
+    line-height: 17px;
 }
 
-.openfiles.ace_tree .tree-row strong.changed,
-.openfiles.ace_tree .tree-row strong.saving,
-.openfiles.ace_tree .tree-row strong.saved,
-.openfiles.ace_tree .tree-row strong.error {
+.openfiles .ace_tree .tree-row strong.changed,
+.openfiles .ace_tree .tree-row strong.saving,
+.openfiles .ace_tree .tree-row strong.saved,
+.openfiles .ace_tree .tree-row strong.error {
     background : url("@{image-path}/tabsave.png") no-repeat 0 2px;
     display: inline-block;
     width: 8px;
-    height: 8px;
-    margin: 6px 0 0 -8px;
+    height: 14px;
+    margin: 5px 3px 0 3px;
     
     -webkit-animation: none;
        -moz-animation: none;
             animation: none;
 }
 
-.openfiles.ace_tree .tree-row strong.changed { background-position : 0 0; }
-.openfiles.ace_tree .tree-row strong.error { background-position : -8px 0; }
-.openfiles.ace_tree .tree-row strong.saving { background-position : -16px 0; }
-.openfiles.ace_tree .tree-row strong.saved { background-position : -24px 0; }
+.openfiles .ace_tree .tree-row strong.changed { background-position : 0 0; }
+.openfiles .ace_tree .tree-row strong.error { background-position : -8px 0; }
+.openfiles .ace_tree .tree-row strong.saving { background-position : -16px 0; }
+.openfiles .ace_tree .tree-row strong.saved { background-position : -24px 0; }
 
-.filetree.openfiles.ace_tree {
+.openfiles .ace_tree .tree-row strong.close:hover,
+.openfiles .ace_tree .tree-row strong.close:active {
+    background: url("@{image-path}/close_tab_btn.png") no-repeat -14px -14px;
+    width: 14px;
+    height: 14px;
+    margin: 2px 0 0 0;
+}
+
+.openfiles .ace_tree .toggler{
+    display : none;
+}
+
+.openfiles .ace_tree .group .toggler{
+    display : inline-block;
+}
+    
+.openfiles {
     background : @panel-background;
+    border-top : 1px solid @border-highlight;
+    border-bottom : 1px solid @border-highlight-dark-medium;
+    box-sizing : border-box;
+    padding : 10px 10px 0 0;
+}
+
+.openfiles>.filetree{
+    height : 100%;
+}
+
+.hidetree .openfiles{
+    border-bottom : 0;
+}
+    
+    
+.hidetree .filetree.real{
+    display : none;
 }
