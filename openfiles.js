@@ -126,11 +126,11 @@ define(function(require, exports, module) {
                 });
                 
                 // make sure scrollbar on windows is in the padding area
-                tree.renderer.on("scrollbarVisibilityChanged", updateScrollBarSize);
-                tree.renderer.on("resize", updateScrollBarSize);
+                ofTree.renderer.on("scrollbarVisibilityChanged", updateScrollBarSize);
+                ofTree.renderer.on("resize", updateScrollBarSize);
                 function updateScrollBarSize() {
-                    var w = tree.renderer.scrollBarV.getWidth();
-                    tree.renderer.scroller.style.right = Math.max(w, 10) + "px";
+                    var w = ofTree.renderer.scrollBarV.getWidth();
+                    ofTree.renderer.scroller.style.right = Math.max(w, 10) + "px";
                 }
 
                 // APF + DOM HACK: close tab with confirmation
@@ -156,7 +156,6 @@ define(function(require, exports, module) {
                     tabs.on("ready", function(){ show(); });
                 else
                     hideOpenFiles();
-                    
 
                 emit("draw");
             });
