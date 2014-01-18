@@ -226,7 +226,7 @@ define(function(require, exports, module) {
 
             ofTree.resize(true);
 
-            var maxHeight = treeParent.parentNode.$int.offsetHeight * 3/4;
+            var maxHeight = treeParent.parentNode.$int.offsetHeight * 0.5;
             var treeHeight = ofTree.renderer.layerConfig.maxHeight + 17;
 
             treeParent.$int.style.height = dragged
