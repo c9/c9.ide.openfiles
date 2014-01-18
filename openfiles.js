@@ -34,6 +34,7 @@ define(function(require, exports, module) {
 
         // UI Elements
         var ofDataProvider, ofTree, treeParent, winFileTree;
+        var ctxItem, ctxDiv
 
         var loaded = false;
         function load(){
@@ -68,8 +69,6 @@ define(function(require, exports, module) {
                 showOpenFiles = settings.getBool("user/openfiles/@show");
                 updateVisibility(showOpenFiles);
             }, plugin);
-
-            draw();
         }
 
         var drawn = false;
@@ -80,24 +79,6 @@ define(function(require, exports, module) {
             // ace_tree customization '.openfiles'
             ui.insertCss(require("text!./openfiles.css"), staticPrefix, plugin);
 
-            tree.getElement("mnuFilesSettings", function(mnuFilesSettings) {
-                ui.insertByIndex(mnuFilesSettings, new ui.item({
-                    caption : "Hide Workspace Files",
-                    type    : "check",
-                    checked : "[{settings.model}::state/projecttree/@hidetree]",
-                    onclick : function(e){
-                        if (this.checked)
-                            ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
-                        else
-                            ui.setStyleClass(treeParent.parentNode.$int, "", ["hidetree"]);
-                        
-                        ofTree.resize();
-                        tree.resize();
-                    }
-                }), 10, plugin);
-                ui.insertByIndex(mnuFilesSettings, new ui.divider(), 20, plugin);
-            });
-            
             tree.getElement("winOpenfiles", function(winOpenfiles) {
                 treeParent = winOpenfiles;
                 
@@ -151,6 +132,26 @@ define(function(require, exports, module) {
                 });
 
                 ofTree.focus = function() {};
+                
+                var mnuFilesSettings = tree.getElement("mnuFilesSettings");
+                ctxItem = ui.insertByIndex(mnuFilesSettings, new ui.item({
+                    caption : "Hide Workspace Files",
+                    type    : "check",
+                    visible : treeParent.visible,
+                    checked : "[{settings.model}::state/projecttree/@hidetree]",
+                    onclick : function(e){
+                        if (this.checked)
+                            ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
+                        else
+                            ui.setStyleClass(treeParent.parentNode.$int, "", ["hidetree"]);
+                        
+                        ofTree.resize();
+                        tree.resize();
+                    }
+                }), 10, plugin);
+                ctxDiv = ui.insertByIndex(mnuFilesSettings, new ui.divider({
+                    visible : treeParent.visible
+                }), 20, plugin);
 
                 if (showOpenFiles)
                     tabs.on("ready", function(){ show(); });
@@ -199,7 +200,7 @@ define(function(require, exports, module) {
                     // name: pane.name (tab0 ...)
                     items: pane.getTabs()
                       .filter(function(tab){ 
-                          return tab.path && tab.loaded && !tab.meta.$closing
+                          return tab.path && tab.loaded && !tab.meta.$closing;
                       })
                       .map(function (tab) {
                         var node = {
@@ -225,6 +226,8 @@ define(function(require, exports, module) {
             // Hide the openfiles
             if (!root.length)
                 return hideOpenFiles();
+
+            ui.setStyleClass(treeParent.parentNode.$int, "hasopenfiles");
 
             treeParent.show();
 
@@ -273,6 +276,8 @@ define(function(require, exports, module) {
         }
 
         function hideOpenFiles() {
+            var htmlNode = treeParent && treeParent.parentNode.$int;
+            htmlNode && ui.setStyleClass(htmlNode, "", ["hasopenfiles"]);
             treeParent && treeParent.hide();
             tree.resize();
         }
@@ -284,17 +289,16 @@ define(function(require, exports, module) {
         }
 
         function updateVisibility(show) {
-            if (treeParent && show === treeParent.visible)
-                return;
-            
-            var htmlNode = treeParent && treeParent.parentNode.$int;
             if (show) {
+                draw();
                 update();
-                htmlNode && ui.setStyleClass(htmlNode, "hasopenfiles");
+                ctxItem && ctxItem.show();
+                ctxDiv && ctxDiv.show();
             }
             else {
                 hideOpenFiles();
-                htmlNode && ui.setStyleClass(htmlNode, "", ["hasopenfiles"]);
+                ctxItem && ctxItem.hide();
+                ctxDiv && ctxDiv.hide();
             }
             
             emit("visible", { value: show });
