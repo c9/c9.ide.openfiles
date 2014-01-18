@@ -264,6 +264,7 @@ define(function(require, exports, module) {
 
         function hideOpenFiles() {
             treeParent && treeParent.hide();
+            tree.resize();
         }
 
         function toggleOpenfiles() {
