@@ -142,7 +142,7 @@ define(function(require, exports, module) {
                 ofTree.focus = function() {};
 
                 if (showOpenFiles)
-                    tabs.on("ready", function(){ update(); });
+                    tabs.on("ready", function(){ show(); });
                 else
                     hideOpenFiles();
                     
