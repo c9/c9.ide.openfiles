@@ -124,6 +124,14 @@ define(function(require, exports, module) {
                 ofTree.on("userSelect", function(){
                     setTimeout(onSelect, 40);
                 });
+                
+                // make sure scrollbar on windows is in the padding area
+                tree.renderer.on("scrollbarVisibilityChanged", updateScrollBarSize);
+                tree.renderer.on("resize", updateScrollBarSize);
+                function updateScrollBarSize() {
+                    var w = tree.renderer.scrollBarV.getWidth();
+                    tree.renderer.scroller.style.right = Math.max(w, 10) + "px";
+                }
 
                 // APF + DOM HACK: close tab with confirmation
                 ofTree.on("mousedown", function(e){
