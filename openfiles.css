@@ -67,10 +67,13 @@
     height : 100%;
 }
 
+.workspace_files.hasopenfiles .filetree.real{
+    border-top: 1px solid @border-highlight;
+}
+
 .hidetree .openfiles{
     border-bottom : 0;
 }
-    
     
 .hidetree .filetree.real{
     display : none;

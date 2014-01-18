@@ -275,11 +275,18 @@ define(function(require, exports, module) {
         function updateVisibility(show) {
             if (treeParent && show === treeParent.visible)
                 return;
-            if (show)
+            
+            var htmlNode = treeParent && treeParent.parentNode.$int;
+            if (show) {
                 update();
-            else
+                htmlNode && ui.setStyleClass(htmlNode, "hasopenfiles");
+            }
+            else {
                 hideOpenFiles();
-            emit("visible", {value: show});
+                htmlNode && ui.setStyleClass(htmlNode, "", ["hasopenfiles"]);
+            }
+            
+            emit("visible", { value: show });
         }
 
         /***** Lifecycle *****/
