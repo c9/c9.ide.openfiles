@@ -90,6 +90,9 @@ define(function(require, exports, module) {
                             ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
                         else
                             ui.setStyleClass(treeParent.parentNode.$int, "", ["hidetree"]);
+                        
+                        ofTree.resize();
+                        tree.resize();
                     }
                 }), 10, plugin);
                 ui.insertByIndex(mnuFilesSettings, new ui.divider(), 20, plugin);
