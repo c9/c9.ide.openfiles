@@ -65,7 +65,10 @@ define(function(require, exports, module) {
 
             settings.on("read", function(e){
                 // Defaults
-                settings.setDefaults("user/openfiles", [["show", "false"]]);
+                settings.setDefaults("user/openfiles", [
+                    ["show", "false"],
+                    ["hidetree", "false"]
+                ]);
                 showOpenFiles = settings.getBool("user/openfiles/@show");
                 updateVisibility(showOpenFiles);
             }, plugin);
@@ -82,7 +85,7 @@ define(function(require, exports, module) {
             tree.getElement("winOpenfiles", function(winOpenfiles) {
                 treeParent = winOpenfiles;
                 
-                if (settings.getBool("state/projecttree/@hidetree"))
+                if (settings.getBool("state/openfiles/@hidetree"))
                     ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
 
                 tree.getElement("winFileTree", function(winFileTreeL) {
@@ -138,7 +141,7 @@ define(function(require, exports, module) {
                     caption : "Hide Workspace Files",
                     type    : "check",
                     visible : treeParent.visible,
-                    checked : "[{settings.model}::state/projecttree/@hidetree]",
+                    checked : "[{settings.model}::state/openfiles/@hidetree]",
                     onclick : function(e){
                         if (this.checked)
                             ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
@@ -294,11 +297,16 @@ define(function(require, exports, module) {
                 update();
                 ctxItem && ctxItem.show();
                 ctxDiv && ctxDiv.show();
+                
+                if (settings.getBool("state/openfiles/@hidetree"))
+                    ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
             }
             else {
                 hideOpenFiles();
                 ctxItem && ctxItem.hide();
                 ctxDiv && ctxDiv.hide();
+                if (treeParent)
+                    ui.setStyleClass(treeParent.parentNode.$int, "", ["hidetree"]);
             }
             
             emit("visible", { value: show });
