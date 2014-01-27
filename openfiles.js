@@ -104,6 +104,9 @@ define(function(require, exports, module) {
                 ofTree.setDataProvider(ofDataProvider);
                 // Some global render metadata
                 ofDataProvider.staticPrefix = staticPrefix;
+                
+                ofDataProvider.on("collapse", function(){ delayedUpdate(); });
+                ofDataProvider.on("expand", function(){ delayedUpdate(); });
 
                 ofTree.on("userSelect", function(){
                     setTimeout(onSelect, 40);
