@@ -34,7 +34,7 @@ define(function(require, exports, module) {
 
         // UI Elements
         var ofDataProvider, ofTree, treeParent, winFileTree;
-        var ctxItem, ctxDiv
+        var ctxItem, ctxDiv, preventUpdate;
 
         var loaded = false;
         function load(){
@@ -104,7 +104,7 @@ define(function(require, exports, module) {
                 ofTree.setDataProvider(ofDataProvider);
                 // Some global render metadata
                 ofDataProvider.staticPrefix = staticPrefix;
-
+                
                 ofTree.on("userSelect", function(){
                     setTimeout(onSelect, 40);
                 });
@@ -122,6 +122,9 @@ define(function(require, exports, module) {
                     var domTarget = e.domEvent.target;
                     var pos = e.getDocumentPosition();
                     var node = ofDataProvider.findItemAtOffset(pos.y);
+                    
+                    setTimeout(updateHeight, 10);
+                    
                     if (node.children.length && !~domTarget.className.indexOf("toggler")) {
                         e.preventDefault();
                         return;
@@ -186,10 +189,13 @@ define(function(require, exports, module) {
             if (!ofTree)
                 return;
 
+            preventUpdate = true;
+
             var activePanes = tabs.getPanes(tabs.container);
             var focussedTab = tabs.focussedTab;
             // focussedTab can be the terminal or output views
-            if (focussedTab && activePanes.indexOf(focussedTab.pane) === -1 && activePanes.length)
+            if (focussedTab && activePanes.indexOf(focussedTab.pane) === -1 
+              && activePanes.length)
                 focussedTab = activePanes[0].getTab();
 
             // unhook document change update listeners
@@ -227,8 +233,10 @@ define(function(require, exports, module) {
             });
 
             // Hide the openfiles
-            if (!root.length)
+            if (!root.length) {
+                preventUpdate = false;
                 return hideOpenFiles();
+            }
 
             ui.setStyleClass(treeParent.parentNode.$int, "hasopenfiles");
 
@@ -242,6 +250,12 @@ define(function(require, exports, module) {
 
             ofTree.resize(true);
 
+            updateHeight();
+        }
+        
+        function updateHeight(selected){
+            preventUpdate = true;
+            
             var maxHeight = treeParent.parentNode.$int.offsetHeight * 0.5;
             var treeHeight = ofTree.renderer.layerConfig.maxHeight + 23;
 
@@ -252,7 +266,12 @@ define(function(require, exports, module) {
             ofTree.resize(true);
             tree.resize();
             
+            if (!selected)
+                selected = ofTree.selectedNode;
+            
             ofTree.renderer.scrollCaretIntoView(selected, 0.5);
+            
+            preventUpdate = false;
         }
 
         function refresh() {
