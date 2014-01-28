@@ -123,9 +123,7 @@ define(function(require, exports, module) {
                     var pos = e.getDocumentPosition();
                     var node = ofDataProvider.findItemAtOffset(pos.y);
                     
-                    setTimeout(updateHeight, 10);
-                    
-                    if (node.children.length && !~domTarget.className.indexOf("toggler")) {
+                    if (node.children && !~domTarget.className.indexOf("toggler")) {
                         e.preventDefault();
                         return;
                     }
@@ -138,6 +136,15 @@ define(function(require, exports, module) {
                 });
 
                 ofTree.focus = function() {};
+                
+                ofTree.renderer.on("autoresize", function() {
+                    updateHeight();
+                });
+                
+                ofTree.setOption("maxLines", 100);
+                ofTree.renderer.getMaxHeight = function () {
+                    return Math.floor(treeParent.parentNode.$int.offsetHeight * 0.5 - 23);
+                };
                 
                 var mnuFilesSettings = tree.getElement("mnuFilesSettings");
                 ctxItem = ui.insertByIndex(mnuFilesSettings, new ui.item({
@@ -204,36 +211,44 @@ define(function(require, exports, module) {
             });
 
             var selected;
-            var root = activePanes.map(function (pane, i) {
-                return {
-                    // name: pane.name (tab0 ...)
-                    items: pane.getTabs()
-                      .filter(function(tab){ 
-                          return tab.path && tab.loaded && !tab.meta.$closing;
-                      })
-                      .map(function (tab) {
+            var root = {groups: {}};
+            var oldRoot = ofDataProvider && ofDataProvider.root;
+            var existing = oldRoot && oldRoot.groups || {};
+            root.children = activePanes.map(function(pane, i) {
+                var group = existing[i] || {isOpen: true};
+                if (group.isOpen == "forced")
+                    group.isOpen = false;
+                root.groups[i] = group;
+                group.children = null;
+                // name: pane.name (tab0 ...)
+                group.children =  pane.getTabs()
+                    .filter(function(tab){ 
+                        return tab.path && tab.loaded && !tab.meta.$closing;
+                    })
+                    .map(function(tab) {
                         var node = {
-                            name  : basename(tab.path),
-                            path  : tab.path,
-                            items : [],
-                            tab   : tab
+                            name : basename(tab.path),
+                            path : tab.path,
+                            tab  : tab
                         };
-                        if (tab == focussedTab)
+                        if (tab == focussedTab) {
                             selected = node;
+                            group.isOpen = "forced";
+                        }
                          
                         tab.document.on("changed", refresh);
                         return node;
-                    })
-                };
+                    });
+                return group;
             }).filter(function(pane){
-                return pane.items.length;
+                return pane.children.length;
             }).map(function (node, i) {
                 node.name = "GROUP " + (i+1);
                 return node;
             });
 
             // Hide the openfiles
-            if (!root.length) {
+            if (!root.children.length) {
                 preventUpdate = false;
                 return hideOpenFiles();
             }
@@ -242,14 +257,12 @@ define(function(require, exports, module) {
 
             treeParent.show();
 
-            if (root.length === 1)
-                root = root[0];
+            if (root.children.length === 1)
+                root = root.children[0];
 
             ofDataProvider.setRoot(root);
             ofDataProvider.selection.selectNode(selected);
-
-            ofTree.resize(true);
-
+            
             updateHeight();
         }
         
@@ -257,13 +270,13 @@ define(function(require, exports, module) {
             preventUpdate = true;
             
             var maxHeight = treeParent.parentNode.$int.offsetHeight * 0.5;
-            var treeHeight = ofTree.renderer.layerConfig.maxHeight + 23;
+            var treeHeight = ofTree.renderer.desiredHeight + 23;
 
             treeParent.$int.style.height = dragged
                 ? Math.min(treeParent.getHeight(), treeHeight) + "px"
                 : Math.min(treeHeight, maxHeight) + "px";
 
-            ofTree.resize(true);
+            // ofTree.resize(true);
             tree.resize();
             
             if (!selected)
@@ -280,21 +293,10 @@ define(function(require, exports, module) {
             ofDataProvider._signal("change");
         }
 
-        function findNode(json, path) {
-            for (var i = 0; i < json.length; i++) {
-                var elem = json[i];
-                if(path === elem.path)
-                    return elem;
-                var inChilren = findNode(elem.items, path);
-                if (inChilren)
-                    return inChilren;
-            }
-            return null;
-        }
-
         function onSelect() {
             var node = ofTree.selection.getCursor();
-            tabs.focusTab(node.path);
+            if (node && tabs.focussedTab && tabs.focussedTab.path != node.path)
+                tabs.focusTab(node.path);
         }
 
         function hideOpenFiles() {
