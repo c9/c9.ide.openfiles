@@ -23,18 +23,7 @@ define(function(require, exports, module) {
         };
         
         this.getClassName = function(datarow){
-            return datarow.children.length ? "group" : "";
-        }
-
-        this.setRoot = function(root){
-            if (Array.isArray(root))
-                root = {items: root};
-            this.root = root || {};
-            this.visibleItems = [];
-            this.open(this.root, true);
-
-            // @TODO Deal with selection
-            this._signal("change");
+            return datarow.children ? "group" : "";
         };
 
         this.getIconHTML = function (datarow) {
