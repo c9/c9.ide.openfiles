@@ -30,6 +30,7 @@ define(function(require, exports, module) {
 
         // tree maximum height
         var showOpenFiles = false;
+        var defaultShow   = options.defaultShow;
         var dragged       = false;
 
         // UI Elements
@@ -66,7 +67,7 @@ define(function(require, exports, module) {
             settings.on("read", function(e){
                 // Defaults
                 settings.setDefaults("user/openfiles", [
-                    ["show", "false"],
+                    ["show", defaultShow],
                     ["hidetree", "false"]
                 ]);
                 showOpenFiles = settings.getBool("user/openfiles/@show");
