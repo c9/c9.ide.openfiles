@@ -3,7 +3,7 @@ define(function(require, exports, module) {
     
     main.consumes = [
         "Plugin", "tabManager", "menus", "commands", "settings",
-        "tree", "save", "ui", "c9"
+        "tree", "save", "ui", "c9", "panels"
     ];
     main.provides = ["openfiles"];
     return main;
@@ -14,6 +14,7 @@ define(function(require, exports, module) {
         var menus    = imports.menus;
         var commands = imports.commands;
         var settings = imports.settings;
+        var panels   = imports.panels;
         var tree     = imports.tree;
         var save     = imports.save;
         var ui       = imports.ui;
@@ -35,7 +36,7 @@ define(function(require, exports, module) {
 
         // UI Elements
         var ofDataProvider, ofTree, treeParent, winFileTree;
-        var ctxItem, ctxDiv, preventUpdate;
+        var ctxItem, ctxDiv, preventUpdate, mnuFilesSettings, ctxItem2;
 
         var loaded = false;
         function load(){
@@ -86,9 +87,6 @@ define(function(require, exports, module) {
             tree.getElement("winOpenfiles", function(winOpenfiles) {
                 treeParent = winOpenfiles;
                 
-                if (settings.getBool("state/openfiles/@hidetree"))
-                    ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
-
                 tree.getElement("winFileTree", function(winFileTreeL) {
                     winFileTree = winFileTreeL;
                 });
@@ -147,28 +145,31 @@ define(function(require, exports, module) {
                     return Math.floor(treeParent.parentNode.$int.offsetHeight * 0.5 - 23);
                 };
                 
-                var mnuFilesSettings = tree.getElement("mnuFilesSettings");
+                mnuFilesSettings = tree.getElement("mnuFilesSettings");
                 ctxItem = ui.insertByIndex(mnuFilesSettings, new ui.item({
                     caption : "Hide Workspace Files",
                     type    : "check",
                     visible : treeParent.visible,
                     checked : "[{settings.model}::state/openfiles/@hidetree]",
                     onclick : function(e){
-                        if (this.checked)
-                            ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
-                        else
-                            ui.setStyleClass(treeParent.parentNode.$int, "", ["hidetree"]);
-                        
-                        ofTree.resize();
-                        tree.resize();
+                        hideTree(this.checked)
                     }
-                }), 10, plugin);
-                ctxDiv = ui.insertByIndex(mnuFilesSettings, new ui.divider({
-                    visible : treeParent.visible
-                }), 20, plugin);
+                }), 195, plugin);
+                ctxItem2 = ui.insertByIndex(mnuFilesSettings, new ui.item({
+                    caption : "Show Open Files",
+                    type    : "check",
+                    checked : "[{settings.model}::user/openfiles/@show]",
+                    command : "toggleOpenfiles"
+                }), 190, plugin);
+                ctxDiv = ui.insertByIndex(mnuFilesSettings, 
+                    new ui.divider(), 185, plugin);
 
-                if (showOpenFiles)
+                if (showOpenFiles) {
                     tabs.on("ready", function(){ show(); });
+                    
+                    if (settings.getBool("state/openfiles/@hidetree"))
+                        hideTree(true);
+                }
                 else
                     hideOpenFiles();
 
@@ -177,6 +178,26 @@ define(function(require, exports, module) {
         }
 
         /***** Methods *****/
+        
+        function hideTree(state){
+            if (state)
+                ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
+            else
+                ui.setStyleClass(treeParent.parentNode.$int, "", ["hidetree"]);
+            
+            if (mnuFilesSettings) {
+                mnuFilesSettings.childNodes.forEach(function(node){
+                    if (node.$position >= 200) {
+                        node.setAttribute("visible", !state);
+                    }
+                });
+            }
+            
+            if (ofTree) {
+                ofTree.resize();
+                tree.resize();
+            }
+        }
         
         var updateTimer;
         function delayedUpdate() {
@@ -318,17 +339,25 @@ define(function(require, exports, module) {
                 draw();
                 update();
                 ctxItem && ctxItem.show();
-                ctxDiv && ctxDiv.show();
                 
                 if (settings.getBool("state/openfiles/@hidetree"))
-                    ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
+                    hideTree(true);
+                
+                if (!panels.isActive("tree")) {
+                    panels.once("showPanelTree", function(){
+                        ofTree.resize(true);
+                        tree.resize(true);
+                    });
+                    
+                    panels.activate("tree");
+                }
             }
             else {
                 hideOpenFiles();
                 ctxItem && ctxItem.hide();
-                ctxDiv && ctxDiv.hide();
+                
                 if (treeParent)
-                    ui.setStyleClass(treeParent.parentNode.$int, "", ["hidetree"]);
+                    hideTree(false);
             }
             
             emit("visible", { value: show });
