@@ -73,6 +73,13 @@ define(function(require, exports, module) {
                 showOpenFiles = settings.getBool("user/openfiles/@show");
                 updateVisibility(showOpenFiles);
             }, plugin);
+            
+            settings.on("state/openfiles", function(e){
+                if (settings.getBool("state/openfiles/@hidetree"))
+                    ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
+                else
+                    ui.setStyleClass(treeParent.parentNode.$int, "", ["hidetree"]);
+            });
         }
 
         var drawn = false;
@@ -154,11 +161,7 @@ define(function(require, exports, module) {
                     visible : treeParent.visible,
                     checked : "[{settings.model}::state/openfiles/@hidetree]",
                     onclick : function(e){
-                        if (this.checked)
-                            ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
-                        else
-                            ui.setStyleClass(treeParent.parentNode.$int, "", ["hidetree"]);
-                        
+                        settings.set("state/openfiles/@hidetree", this.checked);
                         ofTree.resize();
                         tree.resize();
                     }
@@ -259,7 +262,7 @@ define(function(require, exports, module) {
             treeParent.show();
 
             if (root.children.length === 1)
-                root = root.children[0];
+                root = root.children[0].children;
 
             ofDataProvider.setRoot(root);
             ofDataProvider.selection.selectNode(selected);
