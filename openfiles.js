@@ -103,11 +103,11 @@ define(function(require, exports, module) {
                 ofTree.setDataProvider(ofDataProvider);
                 // Some global render metadata
                 ofDataProvider.staticPrefix = staticPrefix;
-                
+
                 ofTree.on("userSelect", function(){
                     setTimeout(onSelect, 40);
                 });
-                
+
                 // make sure scrollbar on windows is in the padding area
                 ofTree.renderer.on("scrollbarVisibilityChanged", updateScrollBarSize);
                 ofTree.renderer.on("resize", updateScrollBarSize);
@@ -180,6 +180,8 @@ define(function(require, exports, module) {
         /***** Methods *****/
         
         function hideTree(state){
+            settings.set("state/openfiles/@hidetree", state);
+            
             if (state)
                 ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
             else
@@ -280,7 +282,7 @@ define(function(require, exports, module) {
             treeParent.show();
 
             if (root.children.length === 1)
-                root = root.children[0];
+                root = root.children[0].children;
 
             ofDataProvider.setRoot(root);
             ofDataProvider.selection.selectNode(selected);
