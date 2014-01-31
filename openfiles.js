@@ -419,7 +419,17 @@ define(function(require, exports, module) {
              * Example usage: when the saving state or document content changed
              * Only applies when openfiles is visible
              */
-            refresh: refresh
+            refresh: refresh,
+            
+            /**
+             * 
+             */
+            showTree: hideTree.bind(null, false),
+            
+            /**
+             * 
+             */
+            hideTree: hideTree.bind(null, true)
         });
 
         register(null, {
