@@ -61,7 +61,7 @@ define(function(require, exports, module) {
 
             menus.addItemByPath("View/Open Files", new ui.item({
                 type    : "check",
-                checked : "[{settings.model}::user/openfiles/@show]",
+                checked : "user/openfiles/@show",
                 command : "toggleOpenfiles"
             }), 200, plugin);
 
@@ -150,7 +150,7 @@ define(function(require, exports, module) {
                     caption : "Hide Workspace Files",
                     type    : "check",
                     visible : treeParent.visible,
-                    checked : "[{settings.model}::state/openfiles/@hidetree]",
+                    checked : "state/openfiles/@hidetree",
                     onclick : function(e){
                         hideTree(this.checked)
                     }
@@ -158,7 +158,7 @@ define(function(require, exports, module) {
                 ctxItem2 = ui.insertByIndex(mnuFilesSettings, new ui.item({
                     caption : "Show Open Files",
                     type    : "check",
-                    checked : "[{settings.model}::user/openfiles/@show]",
+                    checked : "user/openfiles/@show",
                     command : "toggleOpenfiles"
                 }), 190, plugin);
                 ctxDiv = ui.insertByIndex(mnuFilesSettings, 
