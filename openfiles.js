@@ -74,6 +74,8 @@ define(function(require, exports, module) {
                 showOpenFiles = settings.getBool("user/openfiles/@show");
                 updateVisibility(showOpenFiles);
             }, plugin);
+            
+            panels.on("showPanelTree", function(){ update(); });
         }
 
         var drawn = false;
@@ -213,6 +215,9 @@ define(function(require, exports, module) {
 
         function update() {
             if (!showOpenFiles)
+                return;
+                
+            if (!panels.isActive("tree")) 
                 return;
 
             draw();
