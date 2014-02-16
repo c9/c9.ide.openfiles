@@ -184,10 +184,12 @@ define(function(require, exports, module) {
         function hideTree(state){
             settings.set("state/openfiles/@hidetree", state);
             
-            if (state)
-                ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
-            else
-                ui.setStyleClass(treeParent.parentNode.$int, "", ["hidetree"]);
+            if (treeParent) {
+                if (state)
+                    ui.setStyleClass(treeParent.parentNode.$int, "hidetree");
+                else
+                    ui.setStyleClass(treeParent.parentNode.$int, "", ["hidetree"]);
+            }
             
             if (mnuFilesSettings) {
                 mnuFilesSettings.childNodes.forEach(function(node){
