@@ -75,6 +75,11 @@ define(function(require, exports, module) {
                 updateVisibility(showOpenFiles);
             }, plugin);
             
+            settings.on("user/openfiles/@show", function(value){
+                showOpenFiles = value;
+                updateVisibility(showOpenFiles);
+            });
+            
             panels.on("showPanelTree", function(){ update(); });
         }
 
