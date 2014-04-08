@@ -61,8 +61,8 @@ define(function(require, exports, module) {
 
             menus.addItemByPath("View/Open Files", new ui.item({
                 type    : "check",
-                checked : "user/openfiles/@show",
-                command : "toggleOpenfiles"
+                checked : "user/openfiles/@show"
+                // command : "toggleOpenfiles"
             }), 200, plugin);
 
             settings.on("read", function(e){
@@ -343,6 +343,7 @@ define(function(require, exports, module) {
         }
 
         function toggleOpenfiles() {
+            debugger;
             showOpenFiles = !showOpenFiles;
             settings.set("user/openfiles/@show", showOpenFiles);
             updateVisibility(showOpenFiles);
