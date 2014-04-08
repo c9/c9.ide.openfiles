@@ -247,11 +247,28 @@ define(function(require, exports, module) {
             });
 
             var selected;
-            var root = {groups: {}};
+            var root = { groups: [] };
+            var actualRoot = {
+                children : [
+                    {
+                        label     : "open files",
+                        path      : "!openfiles",
+                        isOpen    : true,
+                        className : "heading",
+                        isRoot    : true,
+                        isFolder  : true,
+                        status    : "loaded",
+                        map       : {},
+                        children  : root.groups,
+                        noSelect  : true
+                    }
+                ]
+            };
+        
             var oldRoot = ofDataProvider && ofDataProvider.root;
             var existing = oldRoot && oldRoot.groups || {};
             root.children = activePanes.map(function(pane, i) {
-                var group = existing[i] || {isOpen: true};
+                var group = existing[i] || { isOpen: true, className: "group" };
                 if (group.isOpen == "forced")
                     group.isOpen = false;
                 root.groups[i] = group;
@@ -294,9 +311,9 @@ define(function(require, exports, module) {
             treeParent.show();
 
             if (root.children.length === 1)
-                root = root.children[0].children;
+                actualRoot.children[0].children = root.children[0].children;
 
-            ofDataProvider.setRoot(root);
+            ofDataProvider.setRoot(actualRoot);
             ofDataProvider.selection.selectNode(selected);
             
             updateHeight();

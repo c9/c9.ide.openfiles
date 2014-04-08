@@ -22,8 +22,12 @@ define(function(require, exports, module) {
             return "No open files";
         };
         
+        this.getRowIndent = function(node){
+            return node.$depth ? node.$depth - 1 : 0;
+        };
+        
         this.getClassName = function(datarow){
-            return datarow.children ? "group" : "";
+            return datarow.className || "";
         };
 
         this.getIconHTML = function (datarow) {
