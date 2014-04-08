@@ -360,7 +360,6 @@ define(function(require, exports, module) {
         }
 
         function toggleOpenfiles() {
-            debugger;
             showOpenFiles = !showOpenFiles;
             settings.set("user/openfiles/@show", showOpenFiles);
             updateVisibility(showOpenFiles);
