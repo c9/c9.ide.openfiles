@@ -166,7 +166,6 @@ define(function(require, exports, module) {
                     caption : "Show Open Files",
                     type    : "check",
                     checked : "user/openfiles/@show",
-                    command : "toggleOpenfiles"
                 }), 190, plugin);
                 ctxDiv = ui.insertByIndex(mnuFilesSettings, 
                     new ui.divider(), 185, plugin);
