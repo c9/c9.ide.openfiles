@@ -9,30 +9,30 @@ define(function(require, exports, module) {
     return main;
 
     function main(options, imports, register) {
-        var Plugin   = imports.Plugin;
-        var tabs     = imports.tabManager;
-        var menus    = imports.menus;
+        var Plugin = imports.Plugin;
+        var tabs = imports.tabManager;
+        var menus = imports.menus;
         var commands = imports.commands;
         var settings = imports.settings;
-        var panels   = imports.panels;
-        var tree     = imports.tree;
-        var save     = imports.save;
-        var ui       = imports.ui;
+        var panels = imports.panels;
+        var tree = imports.tree;
+        var save = imports.save;
+        var ui = imports.ui;
 
-        var Tree     = require("ace_tree/tree");
+        var Tree = require("ace_tree/tree");
         var TreeData = require("./openfilesdp");
         var basename = require("path").basename;
 
         /***** Initialization *****/
 
-        var plugin        = new Plugin("Ajax.org", main.consumes);
-        var emit          = plugin.getEmitter();
-        var staticPrefix  = options.staticPrefix;
+        var plugin = new Plugin("Ajax.org", main.consumes);
+        var emit = plugin.getEmitter();
+        var staticPrefix = options.staticPrefix;
 
         // tree maximum height
         var showOpenFiles = false;
-        var defaultShow   = options.defaultShow;
-        var dragged       = false;
+        var defaultShow = options.defaultShow;
+        var dragged = false;
 
         // UI Elements
         var ofDataProvider, ofTree, treeParent, winFileTree;
@@ -60,12 +60,12 @@ define(function(require, exports, module) {
             }, plugin);
 
             menus.addItemByPath("View/Open Files", new ui.item({
-                type    : "check",
-                checked : "user/openfiles/@show"
+                type: "check",
+                checked: "user/openfiles/@show"
                 // command : "toggleOpenfiles"
             }), 200, plugin);
 
-            settings.on("read", function(e){
+            settings.on("read", function(e) {
                 // Defaults
                 settings.setDefaults("user/openfiles", [
                     ["show", defaultShow],
@@ -75,7 +75,7 @@ define(function(require, exports, module) {
                 updateVisibility(showOpenFiles);
             }, plugin);
             
-            settings.on("user/openfiles/@show", function(value){
+            settings.on("user/openfiles/@show", function(value) {
                 showOpenFiles = value;
                 updateVisibility(showOpenFiles);
             });
@@ -124,7 +124,7 @@ define(function(require, exports, module) {
                 }
 
                 // APF + DOM HACK: close tab with confirmation
-                ofTree.on("mousedown", function(e){
+                ofTree.on("mousedown", function(e) {
                     var domTarget = e.domEvent.target;
                     var pos = e.getDocumentPosition();
                     var node = ofDataProvider.findItemAtOffset(pos.y);
@@ -154,18 +154,18 @@ define(function(require, exports, module) {
                 
                 mnuFilesSettings = tree.getElement("mnuFilesSettings");
                 ctxItem = ui.insertByIndex(mnuFilesSettings, new ui.item({
-                    caption : "Hide Workspace Files",
-                    type    : "check",
-                    visible : treeParent.visible,
-                    checked : "state/openfiles/@hidetree",
-                    onclick : function(e){
+                    caption: "Hide Workspace Files",
+                    type: "check",
+                    visible: treeParent.visible,
+                    checked: "state/openfiles/@hidetree",
+                    onclick: function(e) {
                         hideTree(this.checked)
                     }
                 }), 195, plugin);
                 ctxItem2 = ui.insertByIndex(mnuFilesSettings, new ui.item({
-                    caption : "Show Open Files",
-                    type    : "check",
-                    checked : "user/openfiles/@show",
+                    caption: "Show Open Files",
+                    type: "check",
+                    checked: "user/openfiles/@show",
                 }), 190, plugin);
                 ctxDiv = ui.insertByIndex(mnuFilesSettings, 
                     new ui.divider(), 185, plugin);
@@ -185,7 +185,7 @@ define(function(require, exports, module) {
 
         /***** Methods *****/
         
-        function hideTree(state){
+        function hideTree(state) {
             settings.set("state/openfiles/@hidetree", state);
             
             if (treeParent) {
@@ -196,7 +196,7 @@ define(function(require, exports, module) {
             }
             
             if (mnuFilesSettings) {
-                mnuFilesSettings.childNodes.forEach(function(node){
+                mnuFilesSettings.childNodes.forEach(function(node) {
                     if (node.$position >= 200) {
                         node.setAttribute("visible", !state);
                     }
@@ -248,18 +248,18 @@ define(function(require, exports, module) {
             var selected;
             var root = { groups: [] };
             var actualRoot = {
-                children : [
+                children: [
                     {
-                        label     : "open files",
-                        path      : "!openfiles",
-                        isOpen    : true,
-                        className : "heading",
-                        isRoot    : true,
-                        isFolder  : true,
-                        status    : "loaded",
-                        map       : {},
-                        children  : root.groups,
-                        noSelect  : true
+                        label: "open files",
+                        path: "!openfiles",
+                        isOpen: true,
+                        className: "heading",
+                        isRoot: true,
+                        isFolder: true,
+                        status: "loaded",
+                        map: {},
+                        children: root.groups,
+                        noSelect: true
                     }
                 ]
             };
@@ -274,14 +274,14 @@ define(function(require, exports, module) {
                 group.children = null;
                 // name: pane.name (tab0 ...)
                 group.children =  pane.getTabs()
-                    .filter(function(tab){ 
+                    .filter(function(tab) { 
                         return tab.path && tab.loaded && !tab.meta.$closing;
                     })
                     .map(function(tab) {
                         var node = {
-                            name : basename(tab.path),
-                            path : tab.path,
-                            tab  : tab
+                            name: basename(tab.path),
+                            path: tab.path,
+                            tab: tab
                         };
                         if (tab == focussedTab) {
                             selected = node;
@@ -292,7 +292,7 @@ define(function(require, exports, module) {
                         return node;
                     });
                 return group;
-            }).filter(function(pane){
+            }).filter(function(pane) {
                 return pane.children.length;
             }).map(function (node, i) {
                 node.name = "GROUP " + (i+1);
@@ -318,7 +318,7 @@ define(function(require, exports, module) {
             updateHeight();
         }
         
-        function updateHeight(selected){
+        function updateHeight(selected) {
             preventUpdate = true;
             
             var maxHeight = treeParent.parentNode.$int.offsetHeight * 0.5;
@@ -406,7 +406,7 @@ define(function(require, exports, module) {
         });
         plugin.on("unload", function(){
             loaded = false;
-            drawn  = false;
+            drawn = false;
         });
 
         function show() {

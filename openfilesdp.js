@@ -1,15 +1,15 @@
 define(function(require, exports, module) {
-    var oop          = require("ace/lib/oop");
-    var BaseClass    = require("ace_tree/data_provider");
+    var oop = require("ace/lib/oop");
+    var BaseClass = require("ace_tree/data_provider");
 
     function DataProvider(root) {
         BaseClass.call(this, root || {});
 
-        this.rowHeight      = 19;
+        this.rowHeight = 19;
         this.rowHeightInner = 18;
 
         Object.defineProperty(this, "loaded", {
-            get : function(){ return this.visibleItems.length; }
+            get: function(){ return this.visibleItems.length; }
         });
     }
 
@@ -22,11 +22,11 @@ define(function(require, exports, module) {
             return "No open files";
         };
         
-        this.getRowIndent = function(node){
+        this.getRowIndent = function(node) {
             return node.$depth ? node.$depth - 1 : 0;
         };
         
-        this.getClassName = function(datarow){
+        this.getClassName = function(datarow) {
             return datarow.className || "";
         };
 
