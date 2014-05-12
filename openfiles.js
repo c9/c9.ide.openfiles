@@ -159,7 +159,7 @@ define(function(require, exports, module) {
                     visible: treeParent.visible,
                     checked: "state/openfiles/@hidetree",
                     onclick: function(e) {
-                        hideTree(this.checked)
+                        hideTree(this.checked);
                     }
                 }), 195, plugin);
                 ctxItem2 = ui.insertByIndex(mnuFilesSettings, new ui.item({
@@ -171,7 +171,7 @@ define(function(require, exports, module) {
                     new ui.divider(), 185, plugin);
 
                 if (showOpenFiles) {
-                    tabs.on("ready", function(){ show(); });
+                    tabs.once("ready", function(){ show(); });
                     
                     if (settings.getBool("state/openfiles/@hidetree"))
                         hideTree(true);
