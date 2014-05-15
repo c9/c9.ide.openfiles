@@ -63,7 +63,7 @@ define(function(require, exports, module) {
                 type: "check",
                 checked: "user/openfiles/@show"
                 // command : "toggleOpenfiles"
-            }), 200, plugin);
+            }), 210, plugin);
 
             settings.on("read", function(e) {
                 // Defaults
