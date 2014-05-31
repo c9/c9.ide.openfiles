@@ -36,7 +36,7 @@ define(function(require, exports, module) {
 
         // UI Elements
         var ofDataProvider, ofTree, treeParent, winFileTree;
-        var ctxItem, ctxDiv, preventUpdate, mnuFilesSettings, ctxItem2;
+        var ctxItem, preventUpdate, mnuFilesSettings;
 
         var loaded = false;
         function load(){
@@ -64,6 +64,16 @@ define(function(require, exports, module) {
                 checked: "user/openfiles/@show"
                 // command : "toggleOpenfiles"
             }), 210, plugin);
+            
+            tree.getElement("mnuFilesSettings", function(mnuFilesSettings){
+                ui.insertByIndex(mnuFilesSettings, new ui.item({
+                    caption: "Show Open Files",
+                    type: "check",
+                    checked: "user/openfiles/@show",
+                }), 190, plugin);
+                ui.insertByIndex(mnuFilesSettings, 
+                    new ui.divider(), 185, plugin);
+            });
 
             settings.on("read", function(e) {
                 // Defaults
@@ -162,13 +172,6 @@ define(function(require, exports, module) {
                         hideTree(this.checked);
                     }
                 }), 195, plugin);
-                ctxItem2 = ui.insertByIndex(mnuFilesSettings, new ui.item({
-                    caption: "Show Open Files",
-                    type: "check",
-                    checked: "user/openfiles/@show",
-                }), 190, plugin);
-                ctxDiv = ui.insertByIndex(mnuFilesSettings, 
-                    new ui.divider(), 185, plugin);
 
                 if (showOpenFiles) {
                     tabs.once("ready", function(){ show(); });
