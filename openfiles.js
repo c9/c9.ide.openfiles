@@ -120,6 +120,10 @@ define(function(require, exports, module) {
                 ofTree.setDataProvider(ofDataProvider);
                 // Some global render metadata
                 ofDataProvider.staticPrefix = staticPrefix;
+                
+                var height = parseInt(ui.getStyleRule(".openfiles .ace_tree .tree-row", "height"), 10);
+                ofDataProvider.rowHeightInner = height;
+                ofDataProvider.rowHeight = height + 1;
 
                 ofTree.on("userSelect", function(){
                     setTimeout(onSelect, 40);
