@@ -127,7 +127,7 @@ define(function(require, exports, module) {
                     ofDataProvider.rowHeightInner = height;
                     ofDataProvider.rowHeight = height + 1;
                     
-                    if (e.changed) tree.resize();
+                    if (e.changed) (tree).resize(true);
                 });
 
                 ofTree.on("userSelect", function(){
