@@ -3,7 +3,7 @@ define(function(require, exports, module) {
     
     main.consumes = [
         "Plugin", "tabManager", "menus", "commands", "settings",
-        "tree", "save", "ui", "c9", "panels"
+        "tree", "save", "ui", "c9", "panels", "layout"
     ];
     main.provides = ["openfiles"];
     return main;
@@ -15,6 +15,7 @@ define(function(require, exports, module) {
         var commands = imports.commands;
         var settings = imports.settings;
         var panels = imports.panels;
+        var layout = imports.layout;
         var tree = imports.tree;
         var save = imports.save;
         var ui = imports.ui;
@@ -121,9 +122,13 @@ define(function(require, exports, module) {
                 // Some global render metadata
                 ofDataProvider.staticPrefix = staticPrefix;
                 
-                var height = parseInt(ui.getStyleRule(".openfiles .ace_tree .tree-row", "height"), 10);
-                ofDataProvider.rowHeightInner = height;
-                ofDataProvider.rowHeight = height + 1;
+                layout.on("eachTheme", function(e){
+                    var height = parseInt(ui.getStyleRule(".openfiles .ace_tree .tree-row", "height"), 10);
+                    ofDataProvider.rowHeightInner = height;
+                    ofDataProvider.rowHeight = height + 1;
+                    
+                    if (e.changed) tree.resize();
+                });
 
                 ofTree.on("userSelect", function(){
                     setTimeout(onSelect, 40);
