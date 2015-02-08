@@ -9,14 +9,12 @@
         "url": "http://github.com/c9/c9.ide.openfiles.git"
     },
     "plugins": {
-        "plugin": {
-            "openfiles": {}
-        }
+        "openfiles": {}
     },
     "categories": [
         "core"
     ],
     "licenses": [
-        ""
+        "MIT"
     ]
 }
