@@ -125,7 +125,7 @@ define(function(require, exports, module) {
                 layout.on("eachTheme", function(e){
                     var height = parseInt(ui.getStyleRule(".openfiles .ace_tree .tree-row", "height"), 10);
                     ofDataProvider.rowHeightInner = height;
-                    ofDataProvider.rowHeight = height + 1;
+                    ofDataProvider.rowHeight = height;
                     
                     if (e.changed) (tree).resize(true);
                 });
