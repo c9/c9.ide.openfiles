@@ -1,16 +1,13 @@
 define(function(require, exports, module) {
     var oop = require("ace/lib/oop");
     var BaseClass = require("ace_tree/data_provider");
+    var escapeHTML = require("ace/lib/lang").escapeHTML;
 
     function DataProvider(root) {
         BaseClass.call(this, root || {});
 
         this.rowHeight = 19;
         this.rowHeightInner = 18;
-
-        Object.defineProperty(this, "loaded", {
-            get: function(){ return this.visibleItems.length; }
-        });
     }
 
     oop.inherits(DataProvider, BaseClass);
@@ -30,7 +27,7 @@ define(function(require, exports, module) {
             return datarow.className || "";
         };
 
-        this.getIconHTML = function (datarow) {
+        this.getIconHTML = function(datarow) {
             var tab = datarow.tab;
             if (!tab)
                 return "";
@@ -40,6 +37,17 @@ define(function(require, exports, module) {
 
             return html;
         };
+        
+        this.getCaptionHTML = function(datarow) {
+             return escapeHTML(datarow.name)
+                + (datarow.tab ? "<span class='extrainfo'> - " 
+                + escapeHTML(datarow.path) + "</span>" : "");
+        };
+        
+        this.getTooltipText = function(datarow) {
+            return datarow.path || datarow.name;
+        };
+        
 
     }).call(DataProvider.prototype);
 
