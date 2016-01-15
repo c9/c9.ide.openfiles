@@ -55,8 +55,8 @@ define(function(require, exports, module) {
 
             commands.addCommand({
                 name: "toggleOpenfiles",
-                exec: function() {
-                    toggleOpenfiles();
+                exec: function(editor, args) {
+                    toggleOpenfiles(args && args.forceOpen);
                 }
             }, plugin);
 
@@ -370,8 +370,8 @@ define(function(require, exports, module) {
             tree.resize();
         }
 
-        function toggleOpenfiles() {
-            showOpenFiles = !showOpenFiles;
+        function toggleOpenfiles(forceOpen) {
+            showOpenFiles = forceOpen == null ? !showOpenFiles : forceOpen;
             settings.set("user/openfiles/@show", showOpenFiles);
             updateVisibility(showOpenFiles);
         }
