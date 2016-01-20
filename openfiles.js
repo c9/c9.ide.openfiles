@@ -262,7 +262,7 @@ define(function(require, exports, module) {
             var actualRoot = {
                 children: [
                     {
-                        label: "open files",
+                        name: "open files",
                         path: "!openfiles",
                         isOpen: true,
                         className: "heading",
