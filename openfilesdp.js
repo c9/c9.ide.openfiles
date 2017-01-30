@@ -15,7 +15,7 @@ define(function(require, exports, module) {
     (function() {
         this.$sortNodes = false;
 
-        this.getEmptyMessage = function(){
+        this.getEmptyMessage = function() {
             return "No open files";
         };
         

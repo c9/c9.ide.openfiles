@@ -40,7 +40,7 @@ define(function(require, exports, module) {
         var ctxItem, preventUpdate, mnuFilesSettings;
 
         var loaded = false;
-        function load(){
+        function load() {
             if (loaded) return false;
             loaded = true;
 
@@ -66,7 +66,7 @@ define(function(require, exports, module) {
                 // command : "toggleOpenfiles"
             }), 210, plugin);
             
-            tree.getElement("mnuFilesSettings", function(mnuFilesSettings){
+            tree.getElement("mnuFilesSettings", function(mnuFilesSettings) {
                 ui.insertByIndex(mnuFilesSettings, new ui.item({
                     caption: "Show Open Files",
                     type: "check",
@@ -91,11 +91,11 @@ define(function(require, exports, module) {
                 updateVisibility(showOpenFiles);
             });
             
-            panels.on("showPanelTree", function(){ update(); });
+            panels.on("showPanelTree", function() { update(); });
         }
 
         var drawn = false;
-        function draw(){
+        function draw() {
             if (drawn) return;
             drawn = true;
 
@@ -116,13 +116,13 @@ define(function(require, exports, module) {
                 ofTree = new Tree(div);
                 ofDataProvider = new TreeData();
                 // ofTree.renderer.setScrollMargin(0, 10);
-                ofTree.renderer.setTheme({cssClass: "filetree"});
+                ofTree.renderer.setTheme({ cssClass: "filetree" });
                 // Assign the dataprovider
                 ofTree.setDataProvider(ofDataProvider);
                 // Some global render metadata
                 ofDataProvider.staticPrefix = staticPrefix;
                 
-                layout.on("eachTheme", function(e){
+                layout.on("eachTheme", function(e) {
                     var height = parseInt(ui.getStyleRule(".openfiles .ace_tree .tree-row", "height"), 10);
                     ofDataProvider.rowHeightInner = height;
                     ofDataProvider.rowHeight = height;
@@ -130,7 +130,7 @@ define(function(require, exports, module) {
                     if (e.changed) (tree).resize(true);
                 });
 
-                ofTree.on("userSelect", function(){
+                ofTree.on("userSelect", function() {
                     setTimeout(onSelect, 40);
                 });
 
@@ -183,7 +183,7 @@ define(function(require, exports, module) {
                 }), 195, plugin);
 
                 if (showOpenFiles) {
-                    tabs.once("ready", function(){ show(); });
+                    tabs.once("ready", function() { show(); });
                     
                     if (settings.getBool("state/openfiles/@hidetree"))
                         hideTree(true);
@@ -258,7 +258,7 @@ define(function(require, exports, module) {
             });
 
             var selected;
-            var root = { groups: [] };
+            var root = { groups: []};
             var actualRoot = {
                 children: [
                     {
@@ -285,7 +285,7 @@ define(function(require, exports, module) {
                 root.groups[i] = group;
                 group.children = null;
                 // name: pane.name (tab0 ...)
-                group.children =  pane.getTabs()
+                group.children = pane.getTabs()
                     .filter(function(tab) { 
                         return tab.path && tab.loaded && !tab.meta.$closing;
                     })
@@ -307,7 +307,7 @@ define(function(require, exports, module) {
             }).filter(function(pane) {
                 return pane.children.length;
             }).map(function (node, i) {
-                node.name = "GROUP " + (i+1);
+                node.name = "GROUP " + (i + 1);
                 return node;
             });
 
@@ -386,7 +386,7 @@ define(function(require, exports, module) {
                     hideTree(true);
                 
                 if (!panels.isActive("tree")) {
-                    panels.once("showPanelTree", function(){
+                    panels.once("showPanelTree", function() {
                         ofTree.resize(true);
                         tree.resize(true);
                     });
@@ -407,16 +407,16 @@ define(function(require, exports, module) {
 
         /***** Lifecycle *****/
         
-        plugin.on("load", function(){
+        plugin.on("load", function() {
             load();
         });
-        plugin.on("enable", function(){
+        plugin.on("enable", function() {
 
         });
-        plugin.on("disable", function(){
+        plugin.on("disable", function() {
 
         });
-        plugin.on("unload", function(){
+        plugin.on("unload", function() {
             loaded = false;
             drawn = false;
         });
